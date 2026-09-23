@@ -3,7 +3,7 @@ title: Billing tools
 description: Tools that read your subscription, your usage, your credit history and your referral credits.
 ---
 
-These tools read your subscription, your usage, your credit history and your referral credits. They need the permission `billing:read`, which you grant on the consent screen when you connect.
+These tools read your subscription, your usage, your credit history and your referral credits. They need the permission `billing:read`, which you grant on the Authorize access page when you connect.
 
 This page is generated from the connector's tool catalogue. It describes 5 tools. Every tool reads or writes only your own account.
 
@@ -11,13 +11,13 @@ This page is generated from the connector's tool catalogue. It describes 5 tools
 
 - `billing:read`: Read your subscription, usage, and referral information
 
-The [permissions page](/mcp/scopes) lists every permission you can grant.
+The [permissions reference](/mcp/scopes) lists every permission you can grant.
 
 ## `billing.subscription.get`
 
 Read the authenticated student's sanitized subscription and referral-credit state.
 
-Permissions: This tool needs `billing:read`, which the consent screen describes as "Read your subscription, usage, and referral information".
+Permissions: This tool needs `billing:read`, which the Authorize access page describes as "Read your subscription, usage, and referral information".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -95,7 +95,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read the authenticated student's current stored usage without creating a period.
 
-Permissions: This tool needs `billing:read`, which the consent screen describes as "Read your subscription, usage, and referral information".
+Permissions: This tool needs `billing:read`, which the Authorize access page describes as "Read your subscription, usage, and referral information".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -172,7 +172,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 List the authenticated student's credit transactions with measured pagination.
 
-Permissions: This tool needs `billing:read`, which the consent screen describes as "Read your subscription, usage, and referral information".
+Permissions: This tool needs `billing:read`, which the Authorize access page describes as "Read your subscription, usage, and referral information".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -233,7 +233,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read the authenticated student's referral code, credits, and invited count.
 
-Permissions: This tool needs `billing:read`, which the consent screen describes as "Read your subscription, usage, and referral information".
+Permissions: This tool needs `billing:read`, which the Authorize access page describes as "Read your subscription, usage, and referral information".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -294,7 +294,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read the authenticated student's plan tier, entitlement source, billing period and allowances, without creating a usage period.
 
-Permissions: This tool needs `billing:read`, which the consent screen describes as "Read your subscription, usage, and referral information".
+Permissions: This tool needs `billing:read`, which the Authorize access page describes as "Read your subscription, usage, and referral information".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 

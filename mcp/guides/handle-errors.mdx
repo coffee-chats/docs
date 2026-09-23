@@ -3,7 +3,11 @@ title: Handle errors and retries
 description: The three shapes a failure arrives in, how to branch on each, and the five things an agent must never do with one.
 ---
 
-This guide shows you how to recognise and handle every failure Coffee Chats can return. It covers the three shapes a failure arrives in, how to tell a retry hint from a real failure, and the mistakes that turn a recoverable failure into lost or duplicated work. The [error codes](/mcp/errors) page is the reference table behind it.
+This guide shows you how to recognise and handle every failure Coffee Chats can return. It covers the three shapes a failure arrives in, how to tell a retry hint from a real failure, and the mistakes that turn a recoverable failure into lost or duplicated work. The [error codes](/mcp/errors) page is the reference table behind it, and [the result object](/mcp/writes) defines every field named here.
+
+## Everything below arrives with HTTP status 200
+
+All tool-level failures are returned inside a successful protocol response. Only the transport carries other statuses: 401 for a missing or rejected access credential, 413 for a body over 64 kilobytes, and 429 for a rate limit. Branching on HTTP status will not tell you that a write conflicted or that a student declined.
 
 ## The three shapes a failure arrives in
 
@@ -21,7 +25,7 @@ Every read tool reports every failure the same way:
 
 There is no code and no reason, and this is deliberate: the reason could itself describe data the connection was not allowed to see. A call to a tool whose permission was not granted arrives in exactly this shape, and so does a write that fails before it produces a result of its own.
 
-Branch on nothing. Report the failure and stop.
+There is nothing in this response to branch on. Report the failure to the student and stop.
 
   </Tab>
   <Tab title="A result that carries a failure">
@@ -41,12 +45,16 @@ The ten safe writes and the five consequential tools answer with a structured re
 }
 ```
 
-The `status` field is `failed`, `cancelled` or `uncertain`. The `scenario` field narrows it to `denied`, `expired`, `conflict`, `unavailable`, `cancelled` or `uncertain`. The `code` inside `error` is the thing to branch on, and the [error codes](/mcp/errors) page lists every value it can hold.
+A failing write result is keyed on `status` and carries no `tag`. The three values of `status` are `failed`, `cancelled` and `uncertain`. A result that has not failed is keyed on `tag` instead, with `requires_confirmation`, `accepted` or `completed`. Read `tag` first, and read `status` when there is no `tag`.
+
+`scenario` is a narrower label on the same outcome and is informational. On a write result it is one of `success`, `loading`, `conflict`, `denied`, `expired`, `unavailable`, `cancelled` or `uncertain`. The first two appear on results that have not failed. The other six appear on failures.
+
+The `code` inside `error` is the thing to branch on, and the [error codes](/mcp/errors) page lists every value it can hold. `correlationId` identifies this change in the Coffee Chats logs and carries the same value as `operationId` on every result the connector produces today. Record it and quote it when reporting a problem.
 
   </Tab>
   <Tab title="A retry hint">
 
-A retry hint is not a failure. It never arrives on its own: it rides in the metadata of an answer whose result was accepted, so the whole answer looks like this:
+A retry hint is not a failure. It never arrives on its own: it rides under `_meta` beside a result whose `tag` is `accepted`, so the whole answer looks like this:
 
 ```json Accepted result with a retry hint
 {
@@ -71,15 +79,25 @@ The result itself sits under `structuredContent` and the hint under `_meta` of t
   </Tab>
 </Tabs>
 
+## What `retryable` is worth
+
+Every `error` object carries a `retryable` boolean. It is `false` on every failure the connector maps today, except on `OUTCOME_UNKNOWN`, which copies the flag from the record it is reporting and can therefore arrive as `true`. In a retry hint, `retryable` is fixed at `true` by the contract.
+
+Do not branch on it alone. Use the Action column in the [error codes](/mcp/errors) tables, because several codes need a new idempotency key rather than a plain retry, and an uncertain outcome needs a read rather than either.
+
+## How long to keep retrying
+
+The connector sets no retry ceiling and no backoff schedule. The only delay it states is `retryAfterMs` in a retry hint, which the contract bounds to between 1 and 5,000 milliseconds. The following is guidance, not a rule the connector enforces. Honour that delay. Cap the attempts at a small number. Stop once a result is `completed`, `failed`, `cancelled` or `uncertain`, because nothing moves out of those four. One connection may make 120 calls a minute, and a loop spends that budget on one change.
+
 ## Three codes that read differently by tool
 
 `VERSION_CONFLICT`, `ACTION_DENIED` and `ACTION_EXPIRED` have a different cause on a safe write, on a proposal and on a withdrawal, because those tools fail for different reasons. Each tool's own page in the [tool reference](/mcp/tools/overview) prints the wording that applies to it.
 
-`VERSION_CONFLICT` is the one worth spelling out. On a safe write it means either that the stored value moved under the agent, or that the same idempotency key was sent again with different input. On a proposal it means either that the booking page moved between the proposal and the approval, or, again, that the same key was sent again with different input. On `actions.cancel` it means neither of those: the request you asked to withdraw was already decided, already expired or already being applied.
+`VERSION_CONFLICT` is the one worth spelling out. On a safe write it means either that the stored value moved under the agent, or that the same idempotency key was sent again with different input. On a proposal it means either that the booking page moved between the proposal and the approval, or, again, that the same key was sent again with different input. On `actions.cancel` it means neither of those: the review request you asked to withdraw was already decided, already expired or already being applied.
 
 ## When a cancelled result is visible at all
 
-A cancelled result after a disconnect is what the mapping produces when the agent can still see the request. After the student disconnects, the agent's credential is dead, so the next protocol call is refused outright rather than answered with `OPERATION_CANCELLED`. Read a refused call as the end of the connection, and expect the structured cancelled result only when the disconnect did not take the credential the agent was using.
+After the student disconnects, the agent's credential stops working, so most calls are refused before they reach a result. You will therefore rarely see `OPERATION_CANCELLED` from a disconnect. You see it only when the disconnect removed a different connection from the one the agent is using. Treat a refused call as the end of the connection.
 
 A cancelled result from `actions.cancel` is different and always visible, because the agent asked for it on a live connection.
 
@@ -89,7 +107,7 @@ A cancelled result from `actions.cancel` is different and always visible, becaus
 Never retry an uncertain outcome under a new key before reading. An uncertain outcome means Coffee Chats cannot tell whether the change landed. A new key is a new change, so retrying under one without reading first can apply the same change twice. [Settle an uncertain result](/mcp/guides/settle-an-uncertain-result) gives the read that settles each write.
 </Warning>
 
-Never treat a permitted result shape as one the server produces. The result contract admits shapes that no tool returns today, including the `requires_user_action` tag. A shape being legal is not a promise that anything produces it. Build against the shapes each tool's own reference page lists, and treat anything else as an unrecognised answer to be reported rather than acted on.
+Never build against a result shape you have not seen documented for a specific tool. The result format allows shapes that no tool returns today, including the `requires_user_action` tag. Use each tool's reference page as the list of shapes it can return, and report anything else as an unrecognised answer instead of acting on it.
 
 Never infer a reason from a read failure. Every read failure is the same fixed text by design. An agent that tries to distinguish a missing permission from a missing record from a temporary fault is guessing, and its guess will be wrong.
 
@@ -99,13 +117,13 @@ Never show a raw code to a student on its own. The codes are for the agent. Say 
 
 ## Rate limiting is not an error code
 
-A request refused for rate limiting is answered with the status `429` and standard rate-limit headers. None of the published codes appears in that answer. The protocol limiter answers with this body:
+A call refused for rate limiting is answered with HTTP status 429 and these headers: `RateLimit-Policy`, `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` and `Retry-After`. None of the published codes appears in that answer. The protocol limiter answers with this body:
 
 ```json Rate limit response body
 { "error": "rate_limited" }
 ```
 
-Honour the retry-after value. A polling loop that ignores it will spend the whole budget on one waiting request and lock the agent out of its own reads. The [limits](/mcp/limits) page states each limit and what it counts.
+Wait the number of seconds in `Retry-After` before calling again. A polling loop that ignores it will spend the whole budget on one waiting change and lock the agent out of its own reads. The [limits](/mcp/limits) page states each limit and what it counts.
 
 ## Next steps
 

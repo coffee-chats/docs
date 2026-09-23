@@ -1,15 +1,15 @@
 ---
 title: Approvals
-description: The five changes an agent can only propose, what the review page shows you, and the nine states a request can be in.
+description: The five changes an agent can only propose, what the review page shows you, and the nine states a review request can be in.
 ---
 
 Five tools cannot change anything on their own. The agent proposes the change, and nothing is written until you open a Coffee Chats page in your browser and approve what it shows you. After reading this page you will know what those five changes are, exactly what you are shown before you decide, and what every outcome means. [Safe writes and approvals](/mcp/writes) explains why these five are separated from the other ten write tools.
 
-A proposed change is called a request on this page and on the pages you see in the browser.
+One change an agent has proposed and cannot make on its own is called a review request. Every review request waiting for your decision appears at `https://mcp.coffeechats.me/actions`, on a page headed "Requests awaiting review". This documentation calls that page your waiting list.
 
-## The five requests
+## The five review requests
 
-All five are about your booking page. An event type is one kind of meeting you offer on that page, with its own title, description, duration and its own address on the site.
+All five are about your booking page. An event type is one kind of meeting you offer on that page. Each event type has its own title, description, duration, and its own web address on your booking page.
 
 | Tool | What it proposes |
 | --- | --- |
@@ -25,51 +25,55 @@ Every other tool is a read or a change that is applied straight away. The [tool 
 
 The page is headed "Review action". It shows:
 
-- The name and web address of the application that asked. The name is text the application supplied and nobody has checked it, so the page marks it unverified. Read the web address, not the name.
+- The name and the origin of the application that asked. The name is text the application supplied and nobody has checked it, so the page marks it unverified. Read the origin rather than the name. For an application that runs in a web browser, the origin is the web address its sign-in returns to. For a command-line tool there is no web address, and the origin reads `native://loopback`, which means the sign-in is handed back to a program running on your own machine.
 - Which Coffee Chats account the change would affect.
 - The values being proposed. For booking page text, the proposed headline and the proposed welcome message in full. For scheduling rules, each of the four values beside the value you have now. For event type details, each of the three values beside the value stored on that event type now. For visibility and for an event type archive, the one sentence in the effect summary below.
 - A one-line summary of the effect, which is "Update your public booking page text", "Make your booking page public", "Make your booking page private", "Update your booking scheduling rules", "Update the title, description and duration of one event type", "Archive one of your event types" or "Restore one of your archived event types".
-- The cost in credits, which is zero for all five kinds. Under it, the list of people who would be contacted, which is empty for all five kinds. No tool sends an email and no tool spends credits, so the cost is zero and the contact list is empty for every tool in the catalogue.
+- The cost in credits, which is zero for all five kinds. A credit is the unit Coffee Chats meters its paid features in, and your balance is in the app. Under the cost, the list of people who would be contacted, which is empty for all five kinds. No tool sends an email and no tool spends credits, so the cost is zero and the contact list is empty for every tool in the catalogue.
 - Whether your booking page is public now, and its public address.
-- The time the request expires.
+- The time the review request expires.
 - Buttons to approve and to decline, and for booking page text, for scheduling rules and for event type details a form to save a new version.
 
-Two notes appear when they apply. If your public page currently uses your education as the headline, the page says the approved headline will not show until that setting changes. If the request is a scheduling rules change, the page warns you about two things. The four values apply to every event type you offer. Approving writes all four at once, while the settings screen in the app saves them one at a time.
+Two notes appear when they apply.
 
-## What each kind of request adds
+Your booking page can either show a headline you wrote or show your education instead. If it is set to show your education, the page tells you that an approved headline is saved but not displayed. To display it, change that setting in the booking page settings in the app.
+
+If the review request is a scheduling rules change, the page warns you about two things. The four values apply to every event type you offer. Approving writes all four at once, while the settings screen in the app saves them one at a time.
+
+## What each kind of review request adds
 
 <AccordionGroup>
 
 <Accordion title="Booking page text">
-The page prints the proposed headline and the proposed welcome message in full, so you approve the exact words that will appear. This request has an edit form.
+The page prints the proposed headline and the proposed welcome message in full, so you approve the exact words that will appear. This review request has an edit form.
 </Accordion>
 
 <Accordion title="Booking page visibility">
-The page says in one sentence which direction is proposed, and shows whether your page is public now. This request has no edit form, because a booking page is either public or private. If the agent proposed the wrong one, decline it and ask the agent to propose the other one.
+The page says in one sentence which direction is proposed, and shows whether your page is public now. This review request has no edit form, because a booking page is either public or private. If the agent proposed the wrong one, decline it and ask the agent to propose the other one.
 </Accordion>
 
 <Accordion title="Scheduling rules">
-The page prints each of the four values beside the value you have now. The four apply to every event type you offer, and approving writes all four at once. This request has an edit form.
+The page prints each of the four values beside the value you have now. The four apply to every event type you offer, and approving writes all four at once. This review request has an edit form.
 </Accordion>
 
 <Accordion title="Event type details">
-This request carries three values together: the title, the description and the duration of one event type. The page prints each of the three with the value stored on that event type beside it, and a sentence saying whether that value changes. If the proposed description is empty, the page says the description is being cleared. The title cannot be emptied, because an event type must have one.
+This review request carries three values together: the title, the description and the duration of one event type. The page prints each of the three with the value stored on that event type beside it, and a sentence saying whether that value changes. If the proposed description is empty, the page says the description is being cleared. The title cannot be emptied, because an event type must have one.
 
 The page also names the event type it is about: the title it has now, its address on the site, its public address, and whether it is active or archived at the moment. That block sits with the current information rather than with the values, so it is not part of what you approve.
 
-Three notes appear on this kind of request. The duration is what a guest gets when they reschedule an existing booking, so changing it changes the length of bookings that already exist. An archived event type stays hidden from your public page, so approving this request does not publish it again. Saving this event type in Settings sends the title, the description and the duration together, so a later save there replaces what you approve here.
+Three notes appear on this kind of review request. The duration is what a guest gets when they reschedule an existing booking, so changing it changes the length of bookings that already exist. An archived event type stays hidden from your public page, so approving this review request does not publish it again. Saving this event type in Settings sends the title, the description and the duration together, so a later save there replaces what you approve here.
 
-This request has an edit form, and the button is labelled "Save a new event type version".
+This review request has an edit form, and the button is labelled "Save a new event type version".
 </Accordion>
 
 <Accordion title="Event type archive">
-This request goes in one of two directions. Archiving an event type stops it appearing on your public booking page. Restoring an archived one makes it appear again. The page says in one sentence which of the two is proposed, and it names the event type the same way the details request does.
+This review request goes in one of two directions. Archiving an event type stops it appearing on your public booking page. Restoring an archived one makes it appear again. The page says in one sentence which of the two is proposed, and it names the event type the same way the details review request does.
 
-This request has no edit form, because an event type is either active or archived and one of the two is what the agent proposed. If the agent proposed the wrong direction, decline it and ask the agent to propose the other one.
+This review request has no edit form, because an event type is either active or archived and one of the two is what the agent proposed. If the agent proposed the wrong direction, decline it and ask the agent to propose the other one.
 
-Two notes appear on this kind of request. Bookings that already exist on that event type keep working, and a guest can still reschedule one, because a reschedule finds the event type by its identifier rather than by whether it is active. Saving that event type in Settings marks it active again, so a later save there republishes what you archive here.
+Two notes appear on this kind of review request. Bookings that already exist on that event type keep working, and a guest can still reschedule one, because a reschedule finds the event type by its identifier rather than by whether it is active. Saving that event type in Settings marks it active again, so a later save there republishes what you archive here.
 
-You always keep at least one active event type. If the event type the agent names is the only active one you have, Coffee Chats refuses the request at the moment the agent makes it. No request is created, so nothing reaches your waiting list, and the agent receives the same fixed failure text every failed read receives. If your other event types are archived between your approval and the moment the change runs, the refusal comes then instead: nothing is written and the agent is told `NOT_APPLIED`.
+You always keep at least one active event type. If the event type the agent names is the only active one you have, Coffee Chats refuses the proposal at the moment the agent makes it. No review request is created, so nothing reaches your waiting list, and the agent receives the same short failure message that every failed read returns, with no reason given. If your other event types are archived between your approval and the moment the change runs, the refusal comes then instead: nothing is written and the agent is told `NOT_APPLIED`.
 </Accordion>
 
 </AccordionGroup>
@@ -77,20 +81,20 @@ You always keep at least one active event type. If the event type the agent name
 ## Two things people get wrong
 
 <Warning>
-Editing the values is not approving them. If you change the headline, the welcome message, a scheduling number or an event type value on that page and save, you have created a new version of the request. Nothing has been written, and the new version still needs approving.
+Editing the values is not approving them. If you change the headline, the welcome message, a scheduling number or an event type value on that page and save, you have created a new version of the review request. Nothing has been written, and the new version still needs approving.
 </Warning>
 
-You are approving exactly the values shown, at exactly the version shown. The surrounding information, such as whether your booking page is public right now, is there so you can judge the request. It is not part of what you approve, and a later change to it does not invalidate your approval. If the values themselves change before your approval is applied, the approval no longer matches and the change is refused rather than applied to something else.
+You are approving exactly the values shown, at exactly the version shown. The surrounding information, such as whether your booking page is public right now, is there so you can judge the review request. It is not part of what you approve, and a later change to it does not invalidate your approval. If the values themselves change before your approval is applied, the approval no longer matches and the change is refused rather than applied to something else.
 
 ## How the agent learns what you chose
 
-The agent calls the same tool again with the same request identifier. It does that by itself, usually within a few seconds of your decision, and you do not have to tell it what you chose.
+The agent calls the same tool again with the same identifier. It does that by itself, usually within a few seconds of your decision, and you do not have to tell it what you chose.
 
-An agent can also withdraw a request it made, while you have still not decided and no work has started. [Withdraw a request](/mcp/guides/withdraw-a-request) is the procedure. When an agent withdraws a request, it disappears from your waiting list with no notification, so the list at `https://mcp.coffeechats.me/actions` shows a section headed "Recent decisions" under the requests that are still waiting. It holds up to ten requests that are no longer waiting for you, newest first, each with one sentence saying how it ended, the application that asked, and the day you or Coffee Chats decided it. Nothing in that section can still be approved.
+An agent can also withdraw a review request it made, while you have still not decided and no work has started. [Withdraw a review request](/mcp/guides/withdraw-a-request) is the procedure. When an agent withdraws one, it leaves your waiting list with no notification, so that page shows a section headed "Recent decisions" under the review requests that are still waiting. It holds up to ten review requests that are no longer waiting for you, newest first, each with one sentence saying how it ended, the application that asked, and the day you or Coffee Chats decided it. Nothing in that section can still be approved.
 
-## The state of a request
+## The state of a review request
 
-A request is always in one of nine states. This is what each one means for you.
+A review request is always in one of nine states. This is what each one means for you.
 
 | State | What it means |
 | --- | --- |
@@ -104,7 +108,7 @@ A request is always in one of nine states. This is what each one means for you.
 | It expired before you decided | Nothing was written. |
 | It was withdrawn | Either the agent withdrew it, or the connection was disconnected before the change started. Nothing was written. If the disconnect arrived after the change had already started, the result is reported as an unknown outcome instead, because Coffee Chats cannot prove what that attempt did. |
 
-The words above describe your request. They are not the same as the short tags the agent sees in its own results, such as `requires_confirmation` or `accepted`. Those tags describe the shape of a message, not the state of your request, and your agent may present them differently.
+The words above describe your review request. They are not the same as the short tags the agent sees in its own results, such as `requires_confirmation` or `accepted`. Those tags describe the shape of a message, not the state of your review request, and your agent may present them differently. [The result object](/mcp/writes) is where those tags are defined.
 
 ## When the outcome is unknown
 

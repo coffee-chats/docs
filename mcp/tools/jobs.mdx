@@ -3,7 +3,7 @@ title: Job tools
 description: Tools that read your internship applications, the referrals recorded on them and a shared posting, and move one application to a stage and a priority.
 ---
 
-These tools read your internship applications, the referrals recorded on them and a shared posting, and move one application to a stage and a priority. They need the permissions `jobs:read` and `jobs:write`, which you grant on the consent screen when you connect.
+These tools read your internship applications, the referrals recorded on them and a shared posting, and move one application to a stage and a priority. They need the permissions `jobs:read` and `jobs:write`, which you grant on the Authorize access page when you connect.
 
 This page is generated from the connector's tool catalogue. It describes 5 tools. Every tool reads or writes only your own account.
 
@@ -12,13 +12,13 @@ This page is generated from the connector's tool catalogue. It describes 5 tools
 - `jobs:read`: Read your internship applications, the referral requests on them, and individual job postings
 - `jobs:write`: Update the stage and priority of your internship applications
 
-The [permissions page](/mcp/scopes) lists every permission you can grant.
+The [permissions reference](/mcp/scopes) lists every permission you can grant.
 
 ## `jobs.applications.list`
 
 List the authenticated student's internship applications newest first with measured pagination.
 
-Permissions: This tool needs `jobs:read`, which the consent screen describes as "Read your internship applications, the referral requests on them, and individual job postings".
+Permissions: This tool needs `jobs:read`, which the Authorize access page describes as "Read your internship applications, the referral requests on them, and individual job postings".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -82,7 +82,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one internship application owned by the authenticated student.
 
-Permissions: This tool needs `jobs:read`, which the consent screen describes as "Read your internship applications, the referral requests on them, and individual job postings".
+Permissions: This tool needs `jobs:read`, which the Authorize access page describes as "Read your internship applications, the referral requests on them, and individual job postings".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -97,7 +97,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json jobs.applications.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000004"
 }
 ```
 
@@ -142,7 +142,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 List referral asks recorded on one owned application; SUBMITTED is student-recorded status, not proof of external submission.
 
-Permissions: This tool needs `jobs:read`, which the consent screen describes as "Read your internship applications, the referral requests on them, and individual job postings".
+Permissions: This tool needs `jobs:read`, which the Authorize access page describes as "Read your internship applications, the referral requests on them, and individual job postings".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -157,7 +157,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json jobs.applications.referrals.list input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000004"
 }
 ```
 
@@ -182,7 +182,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one posting from the shared catalogue available to every signed-in student; no list or search is exposed.
 
-Permissions: This tool needs `jobs:read`, which the consent screen describes as "Read your internship applications, the referral requests on them, and individual job postings".
+Permissions: This tool needs `jobs:read`, which the Authorize access page describes as "Read your internship applications, the referral requests on them, and individual job postings".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -197,7 +197,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json jobs.postings.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000007"
 }
 ```
 
@@ -244,7 +244,7 @@ What this changes: Move one internship application to a stage and a priority.
 
 Both are written together and both are required, so send the value you want to keep as well as the one you are changing; read them first with jobs.applications.get. The stage is one of SAVED, APPLIED, REFERRAL_RECEIVED, INTERVIEWING, OFFER, ACCEPTED, REJECTED or WITHDRAWN and the priority one of HIGH, MEDIUM or LOW; neither can be cleared. Moving off SAVED for the first time records the applied date, exactly as the app does. Nothing else on the application is changed and nobody is contacted.
 
-Permissions: This tool needs `jobs:write`, which the consent screen describes as "Update the stage and priority of your internship applications".
+Permissions: This tool needs `jobs:write`, which the Authorize access page describes as "Update the stage and priority of your internship applications".
 
 Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
 
@@ -261,7 +261,7 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 
 ```json jobs.applications.stage.update input
 {
-  "applicationId": "0123456789abcdef01234567",
+  "applicationId": "c0ffeec0ffeec0ffee000004",
   "idempotencyKey": "example-idempotency-key-0012",
   "priority": "HIGH",
   "stage": "APPLIED"

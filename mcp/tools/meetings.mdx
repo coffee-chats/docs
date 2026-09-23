@@ -3,7 +3,7 @@ title: Meeting tools
 description: Tools that read your meetings, their notes, outcomes, insights, thank-you drafts and transcripts, and write one meeting's notes and its recorded outcome.
 ---
 
-These tools read your meetings, their notes, outcomes, insights, thank-you drafts and transcripts, and write one meeting's notes and its recorded outcome. They need the permissions `mail:read`, `meetings:read`, `meetings:transcript:read` and `meetings:write`, which you grant on the consent screen when you connect.
+These tools read your meetings, their notes, outcomes, insights, thank-you drafts and transcripts, and write one meeting's notes and its recorded outcome. They need the permissions `mail:read`, `meetings:read`, `meetings:transcript:read` and `meetings:write`, which you grant on the Authorize access page when you connect.
 
 This page is generated from the connector's tool catalogue. It describes 9 tools. Every tool reads or writes only your own account.
 
@@ -14,13 +14,13 @@ This page is generated from the connector's tool catalogue. It describes 9 tools
 - `meetings:transcript:read`: Read meeting transcripts when participant consent allows it
 - `meetings:write`: Update your meeting notes and meeting outcome
 
-The [permissions page](/mcp/scopes) lists every permission you can grant.
+The [permissions reference](/mcp/scopes) lists every permission you can grant.
 
 ## `meetings.list`
 
 List the authenticated student's non-practice meeting records with measured pagination.
 
-Permissions: This tool needs `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+Permissions: This tool needs `meetings:read`, which the Authorize access page describes as "Read your meetings and meeting details".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -83,7 +83,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one authenticated student meeting record without guest credentials or transcript content.
 
-Permissions: This tool needs `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+Permissions: This tool needs `meetings:read`, which the Authorize access page describes as "Read your meetings and meeting details".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -98,7 +98,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json meetings.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000002"
 }
 ```
 
@@ -143,7 +143,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one authenticated student meeting note in measured Unicode-safe fragments.
 
-Permissions: This tool needs `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+Permissions: This tool needs `meetings:read`, which the Authorize access page describes as "Read your meetings and meeting details".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -158,7 +158,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json meetings.notes.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000002"
 }
 ```
 
@@ -184,7 +184,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read bounded meeting outcome metadata, with explicit measured views for owner-authored notes or takeaways.
 
-Permissions: This tool needs `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+Permissions: This tool needs `meetings:read`, which the Authorize access page describes as "Read your meetings and meeting details".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -200,7 +200,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json meetings.outcome.get input
 {
-  "id": "0123456789abcdef01234567",
+  "id": "c0ffeec0ffeec0ffee000002",
   "include": "key_takeaways"
 }
 ```
@@ -246,7 +246,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read bounded safe meeting insights without transcript-derived quotes, rationale, or narrative evidence.
 
-Permissions: This tool needs `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+Permissions: This tool needs `meetings:read`, which the Authorize access page describes as "Read your meetings and meeting details".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -261,7 +261,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json meetings.insights.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000002"
 }
 ```
 
@@ -306,7 +306,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read the authenticated student's thank-you draft without provider identifiers or attachment file ids.
 
-Permissions: This tool needs `mail:read`, which the consent screen describes as "Read your outreach templates and thank-you drafts", and `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+Permissions: This tool needs `mail:read`, which the Authorize access page describes as "Read your outreach templates and thank-you drafts", and `meetings:read`, which the Authorize access page describes as "Read your meetings and meeting details".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -321,7 +321,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json meetings.thank_you.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000002"
 }
 ```
 
@@ -366,7 +366,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read a consented, retained meeting transcript without speaker or provider identifiers.
 
-Permissions: This tool needs `meetings:transcript:read`, which the consent screen describes as "Read meeting transcripts when participant consent allows it".
+Permissions: This tool needs `meetings:transcript:read`, which the Authorize access page describes as "Read meeting transcripts when participant consent allows it".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -381,7 +381,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json meetings.transcript.list input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000002"
 }
 ```
 
@@ -429,7 +429,7 @@ What this changes: Replace the private preparation notes on one of the authentic
 
 This writes the meeting's own notes field and not the note the outcome form captures, at most 10000 characters, and the write fails without changing anything if anybody edited those notes first. A practice session is not writable.
 
-Permissions: This tool needs `meetings:write`, which the consent screen describes as "Update your meeting notes and meeting outcome".
+Permissions: This tool needs `meetings:write`, which the Authorize access page describes as "Update your meeting notes and meeting outcome".
 
 Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
 
@@ -439,14 +439,14 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 | --- | --- | --- | --- |
 | `idempotencyKey` | string | yes | 16 to 128 characters |
 | `meetingId` | string | yes | pattern `^[a-f0-9]{24}$` |
-| `notes` | string | yes | none stated |
+| `notes` | string | yes | at most 10,000 code points |
 
 ### Example call
 
 ```json meetings.notes.update input
 {
   "idempotencyKey": "example-idempotency-key-0008",
-  "meetingId": "0123456789abcdef01234567",
+  "meetingId": "c0ffeec0ffeec0ffee000002",
   "notes": "Ask about the summer internship pipeline and how referrals are submitted."
 }
 ```
@@ -542,7 +542,7 @@ What this changes: Record the outcome of one of the authenticated student's own 
 
 It does not mark a thank-you as sent, it does not schedule a follow-up and it does not move the linked contact, all of which the student does in the app. The write fails without changing anything if anybody recorded any part of that outcome first.
 
-Permissions: This tool needs `meetings:write`, which the consent screen describes as "Update your meeting notes and meeting outcome".
+Permissions: This tool needs `meetings:write`, which the Authorize access page describes as "Update your meeting notes and meeting outcome".
 
 Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
 
@@ -551,9 +551,9 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 | Property | Type | Required | Bounds |
 | --- | --- | --- | --- |
 | `idempotencyKey` | string | yes | 16 to 128 characters |
-| `keyTakeaways` | array | yes | none stated |
+| `keyTakeaways` | array | yes | at most 10 items; each item at most 500 code points |
 | `meetingId` | string | yes | pattern `^[a-f0-9]{24}$` |
-| `outcomeNotes` | string | yes | none stated |
+| `outcomeNotes` | string | yes | at most 10,000 code points |
 | `rating` | integer or null | yes | from 1 to 5 |
 | `referralOutcome` | null or string | yes | one of `GOT_REFERRAL`, `MAYBE_LATER`, `NO_REFERRAL`, `NOT_DISCUSSED` |
 
@@ -565,7 +565,7 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
   "keyTakeaways": [
     "They offered to refer me in April."
   ],
-  "meetingId": "0123456789abcdef01234567",
+  "meetingId": "c0ffeec0ffeec0ffee000002",
   "outcomeNotes": "A warm conversation that ended with a clear next step.",
   "rating": 5,
   "referralOutcome": "GOT_REFERRAL"

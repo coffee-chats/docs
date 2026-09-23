@@ -1,17 +1,23 @@
 ---
 title: Quickstart
-description: Connect an agent to Coffee Chats, sign in, choose what it may do, make a first read and a first write, and end the connection.
+description: Two paths through one connection. Connect an agent to Coffee Chats and choose what it may do, or build the agent that calls the tools.
 ---
 
-This page walks through one whole connection, in order, with nothing left out. By the end you will have added the connector to your agent host, signed in, chosen what to share, read your own profile through a tool, changed one preference through a tool, and ended the connection again. It takes about ten minutes. Reading it installs nothing and grants nothing.
+This page has two paths through the same connection. Pick the one that matches what you are doing. Reading either one installs nothing and grants nothing.
 
-## Before you begin
+The student path connects Claude to your Coffee Chats account and shows you what you are agreeing to. It takes about ten minutes and needs no code.
 
-You need a Coffee Chats account that has finished the normal onboarding in the app. You also need an agent host that speaks MCP and can run an OAuth authorization code flow in a browser. OAuth is the standard that lets you give a program limited access to your account without giving it your password. The [compatibility page](/mcp/compatibility) lists the hosts Coffee Chats accepts today.
+The developer path is for somebody writing the agent. It covers discovery, the first read, the first write and the numbers that govern both.
+
+Both paths need a Coffee Chats account that has finished the normal onboarding in the app, and an agent host that speaks MCP and can run an OAuth authorization code flow in a browser. OAuth is the standard that lets you give a program limited access to your account without giving it your password. The [compatibility page](/mcp/compatibility) lists the hosts Coffee Chats accepts today.
 
 <Note>
-The words used here are defined on the [home page](/): connector, agent, agent host, permission, connection, request, approval.
+The words used here are defined on the [home page](/): connector, agent, agent host, permission, connection, review request, approval, credit, call.
 </Note>
+
+<Tabs>
+
+<Tab title="Student path">
 
 <Steps>
 
@@ -21,7 +27,7 @@ Give your agent host this address:
 
 `https://mcp.coffeechats.me/mcp`
 
-Where you put it depends on the host. Coffee Chats does not accept new clients automatically, so the client identifier below is part of the setup and not an optional extra. A host that sends no identifier is refused before it reaches a sign-in page.
+A client is an application that is allowed to connect, and each one has a short name called a client identifier. Coffee Chats only accepts applications that are already on its list. You must enter the client identifier shown below for your host. Without it, sign-in is refused before you reach a sign-in page.
 
 <Tabs>
   <Tab title="Claude on the web">
@@ -44,12 +50,12 @@ Leave the client secret unset. Claude Code is a native client, so it receives it
 </Tabs>
 
 <Warning>
-Coffee Chats has not yet run either of those clients through a connection from end to end. The menu names in your version of the host may differ from the names written here, and your first connection is a trial. The [compatibility page](/mcp/compatibility) is where a tested result will appear.
+Coffee Chats has not yet run either of those clients through a connection from end to end. The menu names in your version of the host may differ from the names written here, and the `--client-id` flag in the command above is unverified: Coffee Chats has not confirmed that this version of Claude Code accepts it or sends its value. Your first connection is a trial. The [compatibility page](/mcp/compatibility) is where a tested result will appear.
 </Warning>
 
 Only two applications are allowed to connect today, and both are listed above. Any other application is refused at sign-in.
 
-Both are registered and neither is verified. Registration means the identifier and the addresses the application may be sent back to are on the list the authorization server accepts. Verification would mean Coffee Chats has run the whole flow with that application and written down the result, and no such run exists yet.
+Both applications are on the accepted list. Neither has been tested by Coffee Chats from start to finish. Being on the list means the identifier and the addresses the application may be sent back to were checked in advance. It does not mean the connection has been tried.
 
 <Warning>
 Do not paste a session cookie, an application password or any other long-lived secret into an agent host. The connector accepts nothing but OAuth, so a copied secret cannot work, and pasting one puts your whole account at risk.
@@ -59,11 +65,11 @@ Do not paste a session cookie, an application password or any other long-lived s
 
 <Step title="Sign in to Coffee Chats">
 
-Your agent host opens a browser window on the Coffee Chats sign-in page. It also runs a security check called PKCE in the background, which stops another program from taking over the sign-in part way through. You do not have to do anything for that check.
+Your agent host opens a browser window on the Coffee Chats sign-in page. It also runs a security check called PKCE, short for Proof Key for Code Exchange. The check stops another program from taking over the sign-in part way through. You do not have to do anything for it.
 
 Sign in with Google, or with a link that Coffee Chats sends to the email address on your account. Open that link in the browser you started in. Opening it on your phone when you started on a laptop does not finish the flow.
 
-Three clocks run here, and the shortest one is the one to watch. You have ten minutes from the moment your agent host sends you to Coffee Chats to finish signing in and choosing what to share. The email link itself stops working after fifteen minutes, and the whole sign-in attempt after twenty. If any of them runs out, start again from your agent host.
+Three separate time limits apply during sign-in. The shortest one matters most. You have ten minutes from the moment your agent host sends you to Coffee Chats to finish signing in and choose what to share. The email link itself stops working after fifteen minutes, and the whole sign-in attempt after twenty. If any of them runs out, start again from your agent host.
 
 <Check>
 Coffee Chats runs this sign-in page. Your agent host never sees your Google account and never sees the link Coffee Chats emails you. There is no password anywhere in this flow.
@@ -73,7 +79,7 @@ Coffee Chats runs this sign-in page. Your agent host never sees your Google acco
 
 <Step title="Choose what to share">
 
-You then see a page headed "Authorize access". It names the application that is asking, the Coffee Chats account you are signed in with, and every permission it requested, each with the sentence that says what the permission covers. The two buttons are "Approve access" and "Deny access".
+You then see the Authorize access page. It names the application that is asking, the Coffee Chats account you are signed in with, and every permission it asked for, each with the sentence that says what the permission covers. The two buttons are "Approve access" and "Deny access".
 
 The name the application shows is text the application supplied and nobody has checked it, so the page marks it unverified. Read the origin printed under the name instead.
 
@@ -86,7 +92,7 @@ The name the application shows is text the application supplied and nobody has c
   </Tab>
 </Tabs>
 
-Six of the permissions you can grant let a connection change something, and a seventh lets it stay connected. These are the sentences the page shows for those seven:
+Six permissions let a connection change something. A seventh permission, `offline_access`, lets the connection keep working without sending you back to sign in. These are the sentences the page shows for those seven:
 
 - `profile:write`: "Update your profile preferences, and propose booking page changes you approve"
 - `booking:write`: "Update the title, description and duration of your booking event types, and archive or restore them, after you approve the change"
@@ -96,15 +102,17 @@ Six of the permissions you can grant let a connection change something, and a se
 - `jobs:write`: "Update the stage and priority of your internship applications"
 - `offline_access`: "Stay connected by issuing rotating refresh credentials"
 
-That last sentence means the connection can renew itself. Grant it if you want the agent to keep working over days without sending you back to sign-in. Without it, the agent's access stops after ten minutes and you sign in again.
+A refresh credential is a token your agent host uses to get fresh access without asking you to sign in again. Each one can be used once.
+
+Grant `offline_access` if you want the agent to keep working over days without sending you back to sign-in. Without it, the agent's access stops ten minutes after you approve. Work already finished stays finished. To let the agent continue, you sign in again.
 
 The other permissions you can grant only read. The [permissions reference](/mcp/scopes) lists all seventeen with the tools each one unlocks.
 
 <Warning>
-There are no per-permission checkboxes on this page. You approve the whole list or you deny it. If the list holds something you do not want, deny it and ask your agent host to request fewer permissions. A tool whose permission you did not grant returns an error to the agent instead of your data.
+There are no per-permission checkboxes on this page. You approve the whole list or you deny it. If the list includes something you do not want, choose "Deny access". Most agent hosts do not let you change which permissions they ask for, so in practice the choice is to accept the whole list or not to connect. A tool whose permission you did not grant returns an error to the agent instead of your data.
 </Warning>
 
-When you approve, the browser hands an authorization code back to the agent host, and the host trades that code for an access credential. If you granted `offline_access`, it also receives a refresh credential, which is what lets it stay connected without sending you back to the sign-in page.
+When you approve, the browser hands an authorization code back to the agent host, and the host trades that code for an access credential. If you granted `offline_access`, it also receives a refresh credential.
 
 </Step>
 
@@ -112,42 +120,15 @@ When you approve, the browser hands an authorization code back to the agent host
 
 The smallest first call is `profile.get`. It takes no input and returns your own profile: your basic fields, a few list counts, your email-length preference and whether you finished onboarding. It reads only your account and it changes nothing.
 
-Ask your agent to call it. The call it sends carries no input at all:
-
-```json profile.get input
-{}
-```
-
-If that call returns your own data, the connection works end to end. The [profile tools](/mcp/tools/profile) page gives the exact result.
+Ask your agent to call it. If that call returns your own data, the connection works end to end. The [profile tools](/mcp/tools/profile) page gives the exact result.
 
 </Step>
 
-<Step title="Make the first write">
+<Step title="Know what happens straight away">
 
-The smallest write is `profile.update`, which sets your email-length preference. Along with the new value it takes an idempotency key:
+Ten tools write as soon as the agent calls them, with no approval step. They cover your profile preferences, your job-search stage, the notes and tags on a contact, the notes and outcome on a meeting, a campaign's name, description and goal, an internship application's stage and priority, and the withdrawal of a review request you have not decided yet.
 
-```json profile.update input
-{
-  "emailLength": "short",
-  "idempotencyKey": "example-idempotency-key-0001"
-}
-```
-
-An idempotency key is a string the agent makes up for one particular change. If the connection drops and the agent sends the same call again with the same key, Coffee Chats returns the answer it already computed instead of applying the change a second time. That is what makes a retry safe. The key is between 16 and 128 characters. Any string of that length will do, as long as a genuinely new change gets a new one.
-
-The answer says the change is done:
-
-```json profile.update result
-{
-  "tag": "completed",
-  "scenario": "success",
-  "operationId": "0123456789abcdef01234567",
-  "operationStatus": "succeeded",
-  "result": { "summary": "Email length preference updated", "itemCount": 1 }
-}
-```
-
-Ten tools write this way, with no approval step. They cover your profile preferences, your job-search stage, the notes and tags on a contact, the notes and outcome on a meeting, a campaign's name, description and goal, an internship application's stage and priority, and the withdrawal of a request you have not decided yet. The tenth stops a campaign from sending more mail. There is no tool that starts a campaign sending again: you do that yourself in the app.
+The tenth pauses a campaign, which stops Coffee Chats from sending any more of that campaign's mail. An agent can only pause sending. No tool can start a campaign or resume one. You do that yourself in the app.
 
 <Info>
 No tool sends an email and no tool spends credits. The [tool reference](/mcp/tools/overview) lists all 59 tools and marks each one as a read, a safe write or a change that needs your approval.
@@ -157,9 +138,11 @@ No tool sends an email and no tool spends credits. The [tool reference](/mcp/too
 
 <Step title="Know what needs your approval">
 
-Five tools cannot change anything on their own. They propose a change to your booking page text, to whether your booking page is public, to your booking scheduling rules, to the title, description and duration of one of your booking event types, or to whether one of your booking event types is archived. An event type is one kind of meeting you offer on your booking page, with its own title, description, duration and address.
+Five tools cannot change anything on their own. They propose a change to your booking page text, to whether your booking page is public, to your booking scheduling rules, to the title, description and duration of one of your booking event types, or to whether one of your booking event types is archived.
 
-Each of the five answers the agent with a request identifier and a link of the form `https://mcp.coffeechats.me/actions/0123456789abcdef01234567`. Nothing is written until you open that link and approve exactly what the page shows. A request waits thirty minutes and then expires.
+An event type is one kind of meeting you offer on your booking page. Each event type has its own title, description, duration, and its own web address on your booking page.
+
+Each of the five answers the agent with an identifier and a link of the form `https://mcp.coffeechats.me/actions/0123456789abcdef01234567`. Nothing is written until you open that link and approve exactly what the page shows. A review request waits thirty minutes and then expires.
 
 The [approvals page](/mcp/approvals) explains what the review page shows you and what each outcome means.
 
@@ -173,11 +156,113 @@ The connections page at `https://mcp.coffeechats.me/connections` lists every con
 
 The Coffee Chats app has the same list under Settings, on the Integrations tab, in the section headed "Connected apps". The button there is labelled "Disconnect".
 
-Disconnecting takes effect immediately. The agent's current access credential stops working on its next call, and it cannot be renewed. One change Coffee Chats had already cleared to run may still finish. The [revocation page](/mcp/revocation) says what a disconnect stops and what can still finish.
+Disconnecting takes effect immediately. The agent's current access credential stops working on its next call, and it cannot be renewed. If you disconnect while a change is already being written, that one change may still finish. Any change that had not started will not run. The [revocation page](/mcp/revocation) says what a disconnect stops and what can still finish.
 
 </Step>
 
 </Steps>
+
+</Tab>
+
+<Tab title="Developer path">
+
+<Steps>
+
+<Step title="Discover the connector">
+
+Give the agent host the connector address `https://mcp.coffeechats.me/mcp` and nothing else. The host reads `/.well-known/oauth-protected-resource/mcp` to learn which authorization server protects the connector, then reads that server's configuration at `/oauth/mcp/.well-known/openid-configuration`. Both answers are public and neither needs a credential. Do not configure an authorization server by hand.
+
+Dynamic client registration is off. Send one of the two pre-registered client identifiers, `claude-ai` or `claude-code`. Both are public clients and use PKCE. A call with no client identifier is refused before it reaches a sign-in page.
+
+</Step>
+
+<Step title="Know the clocks and the limits before you write the loop">
+
+| What | Value |
+| --- | --- |
+| Time the student has to finish sign-in and consent | 10 minutes |
+| Authorization code lifetime | 5 minutes |
+| Access credential lifetime | 10 minutes |
+| Refresh credential | Single use. Using it returns a new one and retires the old one. |
+| Agent calls on one connection | 120 per minute |
+| Largest call body | 64 kilobytes, then HTTP status 413 |
+| Largest result | 16,384 bytes on a read, 4,096 on a write |
+| Idempotency key | 16 to 128 characters, on 14 of the 15 write tools |
+| A review request's life | 30 minutes, and an edit does not extend it |
+| Changes cleared to run at once, per connection | 4, each with 30 seconds to start |
+
+The [limits](/mcp/limits) page states each of these and what it counts.
+
+<Warning>
+A refresh credential presented from a second machine is treated as a stolen one being replayed, and the whole connection ends rather than that one credential. Keep the credentials on the machine where the student signed in.
+</Warning>
+
+</Step>
+
+<Step title="List the tools, then make the first read">
+
+Once the connection is authorized, list tools and you receive the whole catalogue of 59. Every tool carries its risk class as protocol metadata under the key `coffeechats/risk`, with the value `read`, `safe_write` or `consequential`, so the agent can tell a read from a write before it calls anything.
+
+`profile.get` is the smallest honest first call. It takes no input:
+
+```json profile.get input
+{}
+```
+
+[Read your data](/mcp/guides/read-your-data) covers cursors, fragments and the fixed failure text every read failure uses.
+
+</Step>
+
+<Step title="Make the first write">
+
+The smallest write is `profile.update`, which sets the email-length preference. Along with the new value it takes an idempotency key of 16 to 128 characters that you choose for this one change:
+
+```json profile.update input
+{
+  "emailLength": "short",
+  "idempotencyKey": "example-idempotency-key-0001"
+}
+```
+
+If the connection drops and you send the same call again with the same key and the same input, Coffee Chats returns the answer it already computed instead of applying the change a second time. That is what makes a retry safe. A genuinely new change needs a new key.
+
+The answer says the change is done:
+
+```json profile.update result
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Email length preference updated", "itemCount": 1 }
+}
+```
+
+That object arrives under `structuredContent` in the tool response. [The result object](/mcp/writes) is the one description of every field it can carry, which field is the discriminator, and when the discriminator is `tag` rather than `status`. Write your parser from that section and nothing else.
+
+</Step>
+
+<Step title="Handle the five that need an approval">
+
+Five tools are marked `consequential` and write nothing on their first call. They return a `requires_confirmation` result carrying an `operationId` and a review link, and the student decides in a browser. To learn the outcome, call the same tool again with only `operationId`.
+
+[Propose a booking page change](/mcp/guides/propose-a-booking-page-change) works one of them through end to end, and [withdraw a request](/mcp/guides/withdraw-a-request) takes one back.
+
+</Step>
+
+<Step title="Handle the failures">
+
+All tool-level failures arrive inside a normal protocol response with HTTP status 200. Only 401, 413 and 429 mean anything at the transport level. A 429 carries `RateLimit-Policy`, `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` and `Retry-After`.
+
+[Error codes](/mcp/errors) is the catalogue, and [handle errors and retries](/mcp/guides/handle-errors) is the procedure.
+
+</Step>
+
+</Steps>
+
+</Tab>
+
+</Tabs>
 
 ## About the credentials the agent host holds
 
@@ -186,7 +271,7 @@ An access credential lasts ten minutes. The agent host renews it in the backgrou
 Each refresh credential can be used once. Using it returns a new one and retires the old one, and presenting a retired refresh credential ends the whole connection rather than that one credential.
 
 <Warning>
-Your agent host keeps these credentials on the machine where you signed in. Do not copy them to a second machine. Coffee Chats treats a credential used from a second machine as a stolen one being replayed, and it disconnects the agent. To use a second machine, connect again from that machine.
+Your agent host keeps these credentials on the machine where you signed in. Do not copy them to a second machine. If the same credential is used from a second machine, Coffee Chats treats it as stolen. It ends the connection. To use a second machine, connect again from that machine.
 </Warning>
 
 Anything that looks like a credential in this documentation is a placeholder. An access credential appears as `example-access-token-not-a-real-credential`, which is not a credential and will not work anywhere.
@@ -198,7 +283,7 @@ Anything that looks like a credential in this documentation is a placeholder. An
     What the tools reach, and what stays in the app.
   </Card>
   <Card title="Safe writes and approvals" href="/mcp/writes">
-    Why some changes happen at once and five wait for you.
+    The result object, and why five changes wait for you.
   </Card>
   <Card title="Sign-in and credentials" href="/mcp/authentication">
     The two sign-in paths and how long each credential lasts.

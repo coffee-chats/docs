@@ -3,7 +3,7 @@ title: Booking tools
 description: Tools that read your booking page, your event types, your bookings and your booking conflicts.
 ---
 
-These tools read your booking page, your event types, your bookings and your booking conflicts. They need the permission `booking:read`, which you grant on the consent screen when you connect.
+These tools read your booking page, your event types, your bookings and your booking conflicts. They need the permission `booking:read`, which you grant on the Authorize access page when you connect.
 
 This page is generated from the connector's tool catalogue. It describes 9 tools. Every tool reads or writes only your own account.
 
@@ -11,13 +11,13 @@ This page is generated from the connector's tool catalogue. It describes 9 tools
 
 - `booking:read`: Read your booking settings, event types, bookings, and booking conflicts
 
-The [permissions page](/mcp/scopes) lists every permission you can grant.
+The [permissions reference](/mcp/scopes) lists every permission you can grant.
 
 ## `booking.profile.get`
 
 Read the authenticated host's booking username, display name, public profile settings, and publication state.
 
-Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+Permissions: This tool needs `booking:read`, which the Authorize access page describes as "Read your booking settings, event types, bookings, and booking conflicts".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -58,7 +58,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read the authenticated student's own private booking settings: handle, publication state, booking page text, meeting location, scheduling rules, intake questions and cancellation policy.
 
-Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+Permissions: This tool needs `booking:read`, which the Authorize access page describes as "Read your booking settings, event types, bookings, and booking conflicts".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -137,7 +137,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 List the authenticated host's event types with bounded pagination and an opaque cursor.
 
-Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+Permissions: This tool needs `booking:read`, which the Authorize access page describes as "Read your booking settings, event types, bookings, and booking conflicts".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -177,7 +177,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one authenticated host event type by id with owner-checked lookup.
 
-Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+Permissions: This tool needs `booking:read`, which the Authorize access page describes as "Read your booking settings, event types, bookings, and booking conflicts".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -191,7 +191,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json booking.event_types.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000005"
 }
 ```
 
@@ -215,7 +215,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 List one authenticated host event type's questions in stable stored order.
 
-Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+Permissions: This tool needs `booking:read`, which the Authorize access page describes as "Read your booking settings, event types, bookings, and booking conflicts".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -230,7 +230,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json booking.event_types.questions.list input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000005"
 }
 ```
 
@@ -255,7 +255,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 List the authenticated host's bookings, including canceled records, with bounded pagination.
 
-Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+Permissions: This tool needs `booking:read`, which the Authorize access page describes as "Read your booking settings, event types, bookings, and booking conflicts".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -318,7 +318,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one booking owned by the authenticated host without guest tokens or provider identifiers.
 
-Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+Permissions: This tool needs `booking:read`, which the Authorize access page describes as "Read your booking settings, event types, bookings, and booking conflicts".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -333,7 +333,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json booking.records.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000006"
 }
 ```
 
@@ -378,7 +378,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 List one owned booking's intake answers in stable stored order with bounded pagination.
 
-Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+Permissions: This tool needs `booking:read`, which the Authorize access page describes as "Read your booking settings, event types, bookings, and booking conflicts".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -393,7 +393,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json booking.records.answers.list input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000006"
 }
 ```
 
@@ -418,7 +418,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 List unresolved future booking conflicts for the authenticated host; detectedAt is the background check time.
 
-Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+Permissions: This tool needs `booking:read`, which the Authorize access page describes as "Read your booking settings, event types, bookings, and booking conflicts".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 

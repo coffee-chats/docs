@@ -7,7 +7,7 @@ An uncertain outcome is Coffee Chats declining to guess. It means the connector 
 
 ## Recognise it
 
-An uncertain result carries the status `uncertain` and the code `OUTCOME_UNKNOWN`:
+An uncertain result is keyed on `status` rather than on `tag`. Its `status` is `uncertain` and its `error.code` is `OUTCOME_UNKNOWN`:
 
 ```json contacts.notes.update result
 {
@@ -52,7 +52,7 @@ Every write has one read that answers the question.
 For the contact note above, that read is:
 
 ```json contacts.notes.get input
-{ "id": "0123456789abcdef01234567" }
+{ "id": "c0ffeec0ffeec0ffee000001" }
 ```
 
 ## Decide from what you read
@@ -65,7 +65,7 @@ Whatever the read returns is the answer.
 Tell the student what is stored now rather than what the result said. A raw code on its own tells them nothing.
 
 <Info>
-`actions.cancel` never returns an uncertain outcome. It answers either that the request is withdrawn or that it was no longer withdrawable, and there is nothing to reconcile.
+`actions.cancel` never returns an uncertain outcome. It answers either that the review request is withdrawn or that it was no longer withdrawable, and there is nothing to reconcile.
 </Info>
 
 ## Next steps

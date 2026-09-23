@@ -3,7 +3,7 @@ title: Calendar tools
 description: Tools that read the stored state of your connected calendars.
 ---
 
-These tools read the stored state of your connected calendars. They need the permission `integrations:read`, which you grant on the consent screen when you connect.
+These tools read the stored state of your connected calendars. They need the permission `integrations:read`, which you grant on the Authorize access page when you connect.
 
 This page is generated from the connector's tool catalogue. It describes 4 tools. Every tool reads or writes only your own account.
 
@@ -11,13 +11,13 @@ This page is generated from the connector's tool catalogue. It describes 4 tools
 
 - `integrations:read`: Read your connected calendar sources and their stored connection status
 
-The [permissions page](/mcp/scopes) lists every permission you can grant.
+The [permissions reference](/mcp/scopes) lists every permission you can grant.
 
 ## `calendars.sources.list`
 
 List the authenticated student's stored calendar sources with measured pagination.
 
-Permissions: This tool needs `integrations:read`, which the consent screen describes as "Read your connected calendar sources and their stored connection status".
+Permissions: This tool needs `integrations:read`, which the Authorize access page describes as "Read your connected calendar sources and their stored connection status".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -57,7 +57,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one authenticated student calendar source without credentials, feed URLs, provider messages, or provider calendar identifiers.
 
-Permissions: This tool needs `integrations:read`, which the consent screen describes as "Read your connected calendar sources and their stored connection status".
+Permissions: This tool needs `integrations:read`, which the Authorize access page describes as "Read your connected calendar sources and their stored connection status".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -72,7 +72,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json calendars.sources.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000008"
 }
 ```
 
@@ -117,7 +117,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read stored calendar connection status without contacting a provider. A grant that the student revoked at Google will still read as connected here until some other part of the application notices.
 
-Permissions: This tool needs `integrations:read`, which the consent screen describes as "Read your connected calendar sources and their stored connection status".
+Permissions: This tool needs `integrations:read`, which the Authorize access page describes as "Read your connected calendar sources and their stored connection status".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -153,7 +153,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 List the authenticated student's stored primary-calendar selection flags in stable stored order.
 
-Permissions: This tool needs `integrations:read`, which the consent screen describes as "Read your connected calendar sources and their stored connection status".
+Permissions: This tool needs `integrations:read`, which the Authorize access page describes as "Read your connected calendar sources and their stored connection status".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 

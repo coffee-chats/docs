@@ -7,7 +7,7 @@ Signing in to an agent connection is separate from signing in to the Coffee Chat
 
 ## Where the sign-in happens
 
-Authorization happens on the Coffee Chats connector, in your own browser. Before it shows you a sign-in page, Coffee Chats checks the client identifier, the address the client wants to be sent back to, the permissions it asked for and the connector it says it wants access to. A request that fails any of those checks never reaches a sign-in page.
+Authorization happens on the Coffee Chats connector, in your own browser. Before it shows you a sign-in page, Coffee Chats checks the client identifier, the address the client wants to be sent back to, the permissions it asked for and the connector it says it wants access to. A call that fails any of those checks never reaches a sign-in page.
 
 <Check>
 You sign in with Google or with an emailed link, and there is no password anywhere in this flow. Your agent host never sees your Google account and never sees the link Coffee Chats emails you.
@@ -25,7 +25,7 @@ If you sign in with a Google account that is not the one on your Coffee Chats ac
   </Tab>
   <Tab title="Sign-in by email link">
 
-For an account that already exists, Coffee Chats can email you a link instead. The link completes only in the browser that started the authorization request, and it still needs you to confirm in that browser after you open it.
+For an account that already exists, Coffee Chats can email you a link instead. The link completes only in the browser that started the authorization, and it still needs you to confirm in that browser after you open it.
 
 Two consequences follow from the same-browser rule. Another device cannot use the link. A mail scanner that opens links before you do cannot finish the authorization by itself either.
 
@@ -36,7 +36,7 @@ If you opened the link on the wrong device, start the authorization again from t
 
 ## Choosing permissions
 
-The consent page shows the name the application supplied, the Coffee Chats account you are signed in with, and every permission the application asked for with the sentence that describes it. The name is unchecked text, so the page marks it unverified and shows the application's origin under it. Read the origin. For a web application the origin is the web address its sign-in returns to. For a command-line tool there is no web address, and the origin reads `native://loopback`, which means the sign-in is handed back to a program on your own machine.
+The Authorize access page shows the name the application supplied, the Coffee Chats account you are signed in with, and every permission the application asked for with the sentence that describes it. The name is unchecked text, so the page marks it unverified and shows the application's origin under it. Read the origin. For a web application the origin is the web address its sign-in returns to. For a command-line tool there is no web address, and the origin reads `native://loopback`, which means the sign-in is handed back to a program on your own machine.
 
 There are no per-permission checkboxes on this page. You approve the whole list or you deny it. [Permissions](/mcp/permissions) explains what that list buys.
 
@@ -54,7 +54,7 @@ Being signed in to the Coffee Chats app does not authorize an agent. An agent's 
 | Access credential, which the agent sends on every call | 10 minutes |
 | Refresh credential, counted from its last use | 7 days |
 | The connection itself | 30 days |
-| The browser session you use to sign in, review requests and disconnect | 30 minutes |
+| The browser session you use to sign in, decide review requests and disconnect | 30 minutes |
 | An authorization you started and have not finished | 10 minutes |
 | A sign-in attempt, counted from the moment you start it | 20 minutes |
 | An emailed sign-in link | 15 minutes |
@@ -81,7 +81,7 @@ Deleting your Coffee Chats account does disconnect every agent connection on it.
 
 <CardGroup cols="2">
   <Card title="Permissions" href="/mcp/permissions">
-    What you are agreeing to on the consent screen.
+    What you are agreeing to on the Authorize access page.
   </Card>
   <Card title="Ending a connection" href="/mcp/revocation">
     Where to disconnect, and what a disconnect stops.

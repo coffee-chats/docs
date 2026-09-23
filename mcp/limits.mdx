@@ -1,13 +1,13 @@
 ---
 title: Limits and budgets
-description: The request limits on every Coffee Chats address, the size of a request body and a result, and the bounds on work in flight.
+description: The call limits on every Coffee Chats address, the size of a call body and a result, and the bounds on work in flight.
 ---
 
-This page states every limit the connector applies: how often each address answers, how large a request body and a result may be, and how much work one connection can have in flight. Each number is what the connector enforces today.
+This page states every limit the connector applies: how often each address answers, how large a call body and a result may be, and how much work one connection can have in flight. Each number is what the connector enforces today.
 
-## Request limits
+## Call limits
 
-A refused request is answered with the status `429` and standard rate-limit headers, including the limit, the remaining count, the reset time and a retry-after value. Honour the retry-after value.
+A refused call is answered with HTTP status 429 and these headers: `RateLimit-Policy`, `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` and `Retry-After`. Wait the number of seconds in `Retry-After` before calling again.
 
 | What you are doing | Limit | Counted per |
 | --- | --- | --- |
@@ -15,9 +15,9 @@ A refused request is answered with the status `429` and standard rate-limit head
 | Coming back from Google | 30 per minute | Calling network address |
 | Asking for an email sign-in link | 5 every 3 minutes | Calling network address |
 | Asking for an email sign-in link | 1 every 3 minutes | Account |
-| Every other authorization request | 60 per minute | Calling network address |
-| Opening or deciding a request in the browser | 60 per minute | Calling network address |
-| Opening or deciding a request in the browser | 30 per minute | Account |
+| Every other authorization call | 60 per minute | Calling network address |
+| Opening or deciding a review request in the browser | 60 per minute | Calling network address |
+| Opening or deciding a review request in the browser | 30 per minute | Account |
 | Agent calls on an open connection | 120 per minute | Connection and client together |
 
 The protocol limiter answers a refusal with this body:
@@ -27,12 +27,12 @@ The protocol limiter answers a refusal with this body:
 ```
 
 <Warning>
-A polling loop that ignores the retry-after value will spend the whole budget on one waiting request and lock the agent out of its own reads. Poll a pending approval at a human pace.
+A polling loop that ignores `Retry-After` will spend the whole budget on one waiting change and lock the agent out of its own reads. Poll a waiting approval at a human pace.
 </Warning>
 
-## Request body size
+## Call body size
 
-A request body sent to the protocol address is accepted up to 64 kilobytes. A larger body is refused with the status `413`. No tool input the catalogue defines comes close to that.
+The body of a call to the protocol address is accepted up to 64 kilobytes. A larger body is refused with HTTP status 413. No tool input the catalogue defines comes close to that.
 
 ## Result size
 
@@ -44,7 +44,7 @@ Every tool declares a maximum result size, and its own page in the [tool referen
 | `profile.job_search_stage.get` | 4,096 bytes |
 | The other forty-three read tools | 16,384 bytes |
 
-The budget is measured on the whole result as it goes over the wire, so the wrapping JSON counts as well as the data.
+The budget is measured on the whole result as it goes over the wire, so the wrapping JSON counts as well as the data. 16,384 bytes is the largest result any tool in the catalogue can return.
 
 A result that would exceed its budget is not truncated. Tools whose single stored value can grow past the budget return a measured fragment and a cursor instead, and [read your data](/mcp/guides/read-your-data) describes how to reassemble one. For any other tool, a result over the budget fails with the same fixed error every read failure uses, which is why the reads are narrow and paged in the first place.
 
@@ -56,15 +56,15 @@ A cursor is bounded too. Each tool that takes one states its length in its own i
 | --- | --- |
 | Length of a key | 16 to 128 characters |
 | Write tools that take one | 14 of the 15 |
-| The exception | `actions.cancel`, which takes a request identifier instead |
+| The exception | `actions.cancel`, whose whole input is the identifier of the review request it withdraws |
 
-A stored change is made unique by the connection, the tool name and the key together.
+A stored change is made unique by the connection, the tool name and the key together. The connector sets no expiry on a key. The record a key names carries no purge clock, so a replay of an old key returns the old answer however long ago the change was made.
 
 ## Work in flight
 
 A connection can have at most four changes cleared to run at once. Each clearance lasts thirty seconds, and that is a deadline for starting rather than a promise about finishing. A change that holds a clearance and does not start within it is refused and nothing is written. A change that has already started is not stopped, including by a disconnect.
 
-A request that needs approval waits thirty minutes from the moment it is made, and editing it does not extend that deadline.
+A review request waits thirty minutes from the moment it is made, and editing it does not extend that deadline.
 
 ## Credential lifetimes
 

@@ -3,7 +3,7 @@ title: Campaign tools
 description: Tools that read your campaigns, the companies they target and their outreach templates, and rewrite one campaign's name, description and goal.
 ---
 
-These tools read your campaigns, the companies they target and their outreach templates, and rewrite one campaign's name, description and goal. They need the permissions `campaigns:read`, `campaigns:write` and `mail:read`, which you grant on the consent screen when you connect.
+These tools read your campaigns, the companies they target and their outreach templates, and rewrite one campaign's name, description and goal. They need the permissions `campaigns:read`, `campaigns:write` and `mail:read`, which you grant on the Authorize access page when you connect.
 
 This page is generated from the connector's tool catalogue. It describes 6 tools. Every tool reads or writes only your own account.
 
@@ -13,13 +13,13 @@ This page is generated from the connector's tool catalogue. It describes 6 tools
 - `campaigns:write`: Pause a campaign's sending, and change a campaign's name, description and goal
 - `mail:read`: Read your outreach templates and thank-you drafts
 
-The [permissions page](/mcp/scopes) lists every permission you can grant.
+The [permissions reference](/mcp/scopes) lists every permission you can grant.
 
 ## `campaigns.list`
 
 List the authenticated student's campaigns, including archived campaigns by default; discovery status is the last stored value and may lag.
 
-Permissions: This tool needs `campaigns:read`, which the consent screen describes as "Read your campaigns, their selected companies, and outreach templates".
+Permissions: This tool needs `campaigns:read`, which the Authorize access page describes as "Read your campaigns, their selected companies, and outreach templates".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -82,7 +82,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one owned campaign directly; discovery status is the last stored value and may lag.
 
-Permissions: This tool needs `campaigns:read`, which the consent screen describes as "Read your campaigns, their selected companies, and outreach templates".
+Permissions: This tool needs `campaigns:read`, which the Authorize access page describes as "Read your campaigns, their selected companies, and outreach templates".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -97,7 +97,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json campaigns.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000003"
 }
 ```
 
@@ -142,7 +142,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 List every selected company and its last stored discovery state for one owned campaign.
 
-Permissions: This tool needs `campaigns:read`, which the consent screen describes as "Read your campaigns, their selected companies, and outreach templates".
+Permissions: This tool needs `campaigns:read`, which the Authorize access page describes as "Read your campaigns, their selected companies, and outreach templates".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -157,7 +157,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json campaigns.companies.list input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000003"
 }
 ```
 
@@ -203,7 +203,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one owned campaign outreach template with campaign and mail-read permission.
 
-Permissions: This tool needs `campaigns:read`, which the consent screen describes as "Read your campaigns, their selected companies, and outreach templates", and `mail:read`, which the consent screen describes as "Read your outreach templates and thank-you drafts".
+Permissions: This tool needs `campaigns:read`, which the Authorize access page describes as "Read your campaigns, their selected companies, and outreach templates", and `mail:read`, which the Authorize access page describes as "Read your outreach templates and thank-you drafts".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -219,7 +219,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json campaigns.template.get input
 {
-  "id": "0123456789abcdef01234567",
+  "id": "c0ffeec0ffeec0ffee000003",
   "part": "base_message"
 }
 ```
@@ -269,7 +269,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Count the contacts of one owned campaign by outreach state. The four contact counts are computed at call time and are never stored by this tool, so they are current; the campaign's own discovery status is the last stored value and may lag the web interface. The emails sent figure is the stored counter that email delivery maintains.
 
-Permissions: This tool needs `campaigns:read`, which the consent screen describes as "Read your campaigns, their selected companies, and outreach templates".
+Permissions: This tool needs `campaigns:read`, which the Authorize access page describes as "Read your campaigns, their selected companies, and outreach templates".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -283,7 +283,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json campaigns.contact_stats.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000003"
 }
 ```
 
@@ -314,7 +314,7 @@ What this changes: Rewrite one campaign's name, description and goal.
 
 All three are written together and all three are required, so send the values you want to keep as well as the ones you are changing; read them first with campaigns.get. The name is at most 100 characters and may not be blank, the description and the goal at most 500 each. This changes nothing about who the campaign contacts, what it sends or when it sends it.
 
-Permissions: This tool needs `campaigns:write`, which the consent screen describes as "Pause a campaign's sending, and change a campaign's name, description and goal".
+Permissions: This tool needs `campaigns:write`, which the Authorize access page describes as "Pause a campaign's sending, and change a campaign's name, description and goal".
 
 Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
 
@@ -332,7 +332,7 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 
 ```json campaigns.details.update input
 {
-  "campaignId": "0123456789abcdef01234567",
+  "campaignId": "c0ffeec0ffeec0ffee000003",
   "description": "Outreach to fintech alumni who graduated in the last five years.",
   "goal": "Book five coffee chats before the end of the term.",
   "idempotencyKey": "example-idempotency-key-0011",

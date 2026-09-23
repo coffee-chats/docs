@@ -3,7 +3,7 @@ title: Action withdrawal tool
 description: The one tool that withdraws a change the agent proposed while you have not decided on it yet.
 ---
 
-This tool withdraws a change the agent proposed while you have not decided on it yet. It needs the permission `profile:write`, which you grant on the consent screen when you connect.
+This tool withdraws a change the agent proposed while you have not decided on it yet. It needs the permission `profile:write`, which you grant on the Authorize access page when you connect.
 
 This page is generated from the connector's tool catalogue. It describes 1 tool. Every tool reads or writes only your own account.
 
@@ -11,15 +11,15 @@ This page is generated from the connector's tool catalogue. It describes 1 tool.
 
 - `profile:write`: Update your profile preferences, and propose booking page changes you approve
 
-The [permissions page](/mcp/scopes) lists every permission you can grant.
+The [permissions reference](/mcp/scopes) lists every permission you can grant.
 
 ## `actions.cancel`
 
 What this changes: Withdraw an action this client proposed for the authenticated student, while it is still waiting for the student's decision and no execution has started.
 
-Permissions: This tool needs `profile:write`, which the consent screen describes as "Update your profile preferences, and propose booking page changes you approve".
+Permissions: This tool needs `profile:write`, which the Authorize access page describes as "Update your profile preferences, and propose booking page changes you approve".
 
-Risk: `safe_write`. This tool withdraws a request the agent proposed and changes no setting of yours. It does not ask you to approve first, because a withdrawal writes nothing to your account and can only happen while you have not decided.
+Risk: `safe_write`. This tool withdraws a review request the agent proposed and changes no setting of yours. It does not ask you to approve first, because a withdrawal writes nothing to your account and can only happen while you have not decided.
 
 ### Input
 
@@ -77,5 +77,5 @@ A call carries one of these two codes, and `OPERATION_CANCELLED` is the success.
 
 | Code | What it means |
 | --- | --- |
-| `OPERATION_CANCELLED` | The request is withdrawn and nothing was written. A request this tool finds already withdrawn returns the same code, so withdrawing twice is the same success. |
-| `VERSION_CONFLICT` | The request could no longer be withdrawn, so nothing was withdrawn and nothing was written. You had already decided it, or it had expired, or Coffee Chats had already started applying it. |
+| `OPERATION_CANCELLED` | The review request is withdrawn and nothing was written. A review request this tool finds already withdrawn returns the same code, so withdrawing twice is the same success. |
+| `VERSION_CONFLICT` | The review request could no longer be withdrawn, so nothing was withdrawn and nothing was written. You had already decided it, or it had expired, or Coffee Chats had already started applying it. |

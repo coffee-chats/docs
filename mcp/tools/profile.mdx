@@ -3,7 +3,7 @@ title: Profile tools
 description: Tools that read your Coffee Chats profile and update your email-length preference and your job-search stage.
 ---
 
-These tools read your Coffee Chats profile and update your email-length preference and your job-search stage. They need the permissions `profile:read` and `profile:write`, which you grant on the consent screen when you connect.
+These tools read your Coffee Chats profile and update your email-length preference and your job-search stage. They need the permissions `profile:read` and `profile:write`, which you grant on the Authorize access page when you connect.
 
 This page is generated from the connector's tool catalogue. It describes 6 tools. Every tool reads or writes only your own account.
 
@@ -12,13 +12,13 @@ This page is generated from the connector's tool catalogue. It describes 6 tools
 - `profile:read`: Read your Coffee Chats profile and preferences
 - `profile:write`: Update your profile preferences, and propose booking page changes you approve
 
-The [permissions page](/mcp/scopes) lists every permission you can grant.
+The [permissions reference](/mcp/scopes) lists every permission you can grant.
 
 ## `profile.get`
 
 Read the authenticated student's bounded basic profile fields, list counts, email-length preference, and completed onboarding state.
 
-Permissions: This tool needs `profile:read`, which the consent screen describes as "Read your Coffee Chats profile and preferences".
+Permissions: This tool needs `profile:read`, which the Authorize access page describes as "Read your Coffee Chats profile and preferences".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -60,7 +60,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 List the authenticated student's education entries in stable stored order.
 
-Permissions: This tool needs `profile:read`, which the consent screen describes as "Read your Coffee Chats profile and preferences".
+Permissions: This tool needs `profile:read`, which the Authorize access page describes as "Read your Coffee Chats profile and preferences".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -97,7 +97,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one authenticated student job-preference list in stable stored order.
 
-Permissions: This tool needs `profile:read`, which the consent screen describes as "Read your Coffee Chats profile and preferences".
+Permissions: This tool needs `profile:read`, which the Authorize access page describes as "Read your Coffee Chats profile and preferences".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -138,7 +138,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read the authenticated student's stored job-search stage, experience level and recruiting timeline, with null for a value the student has not set.
 
-Permissions: This tool needs `profile:read`, which the consent screen describes as "Read your Coffee Chats profile and preferences".
+Permissions: This tool needs `profile:read`, which the Authorize access page describes as "Read your Coffee Chats profile and preferences".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -175,7 +175,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 What this changes: Update the authenticated student's email-length preference with durable idempotency.
 
-Permissions: This tool needs `profile:write`, which the consent screen describes as "Update your profile preferences, and propose booking page changes you approve".
+Permissions: This tool needs `profile:write`, which the Authorize access page describes as "Update your profile preferences, and propose booking page changes you approve".
 
 Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
 
@@ -284,7 +284,7 @@ A call that does not succeed carries one of these codes.
 
 What this changes: Set the authenticated student's job-search stage, experience level and recruiting timeline together, with durable idempotency.
 
-Permissions: This tool needs `profile:write`, which the consent screen describes as "Update your profile preferences, and propose booking page changes you approve".
+Permissions: This tool needs `profile:write`, which the Authorize access page describes as "Update your profile preferences, and propose booking page changes you approve".
 
 Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
 

@@ -3,7 +3,9 @@ title: Update a preference safely
 description: Make one safe write, replay it after a lost answer, recognise the conflict a reused key causes, and handle the retry hint.
 ---
 
-This guide shows you how to make a change that needs no approval, and how to repeat it safely when an answer is lost. It works one tool through in full and then gives the other nine, because all ten behave the same way. [Safe writes and approvals](/mcp/writes) explains why these ten are separated from the five that wait for you.
+This guide shows you how to make a change that needs no approval, and how to repeat it safely when an answer is lost. It works one tool through in full and then gives the other nine. [Safe writes and approvals](/mcp/writes) explains why these ten are separated from the five that wait for you, and its result object section defines every field printed below.
+
+Nine of the ten take an idempotency key and behave the same way. The tenth is `actions.cancel`, whose whole input is the identifier of the review request it withdraws. Sending it a key is refused before the tool runs.
 
 ## Send the write
 
@@ -11,7 +13,7 @@ This guide shows you how to make a change that needs no approval, and how to rep
 
 ```json contacts.notes.update input
 {
-  "contactId": "0123456789abcdef01234567",
+  "contactId": "c0ffeec0ffeec0ffee000001",
   "idempotencyKey": "example-idempotency-key-0006",
   "notes": "Met at the spring fintech mixer. Follow up in April about the referral."
 }
@@ -29,7 +31,13 @@ The answer says the change is done:
 }
 ```
 
-The `result` object is a summary and a count. The written value is never sent back, so read the value with the matching read tool if you need to show the student what is stored.
+The `result` object is a summary and a count. The written value is never sent back, so read the value with the matching read tool if you need to show the student what is stored. A write result is never larger than 4,096 bytes, which is why it carries a summary rather than the value.
+
+## Poll a write that was accepted
+
+A safe write can answer `accepted` rather than `completed`, which means the work is under way and nothing has been written yet. To poll it, call the same tool again with the same idempotency key and the same input. The reply is the current state of that change, and nothing is written twice.
+
+Wait at least a second between calls, and stop when the result is `completed`, `failed`, `cancelled` or `uncertain`. Those four are the states nothing moves out of.
 
 ## Replay after a lost answer
 
@@ -92,7 +100,7 @@ Wait for `retryAfterMs` milliseconds and call the tool again with the same idemp
 
 ## The other nine safe writes
 
-Each one takes the same idempotency key and answers with the same shapes. The tool's own reference page carries its full input table.
+Each of the first eight takes the same idempotency key and answers with the same shapes. The ninth, `actions.cancel`, takes no key at all. Every tool's own reference page carries its full input table, including the bounds the executor enforces on each field.
 
 <AccordionGroup>
 
@@ -129,7 +137,7 @@ Replaces the whole tag list on one contact, at most 10 tags of 60 characters eac
 
 ```json contacts.tags.update input
 {
-  "contactId": "0123456789abcdef01234567",
+  "contactId": "c0ffeec0ffeec0ffee000001",
   "idempotencyKey": "example-idempotency-key-0007",
   "tags": ["fintech", "warm"]
 }
@@ -144,7 +152,7 @@ Replaces the private preparation notes on one meeting, at most 10,000 characters
 ```json meetings.notes.update input
 {
   "idempotencyKey": "example-idempotency-key-0008",
-  "meetingId": "0123456789abcdef01234567",
+  "meetingId": "c0ffeec0ffeec0ffee000002",
   "notes": "Ask about the summer internship pipeline and how referrals are submitted."
 }
 ```
@@ -159,7 +167,7 @@ Records the star rating from 1 to 5, the referral outcome, up to 10 key takeaway
 {
   "idempotencyKey": "example-idempotency-key-0009",
   "keyTakeaways": ["They offered to refer me in April."],
-  "meetingId": "0123456789abcdef01234567",
+  "meetingId": "c0ffeec0ffeec0ffee000002",
   "outcomeNotes": "A warm conversation that ended with a clear next step.",
   "rating": 5,
   "referralOutcome": "GOT_REFERRAL"
@@ -174,7 +182,7 @@ Stops a campaign from sending more mail. Read the bounds on the [campaign pause 
 
 ```json campaign_pause_sending input
 {
-  "campaignId": "0123456789abcdef01234567",
+  "campaignId": "c0ffeec0ffeec0ffee000003",
   "idempotencyKey": "example-idempotency-key-0010"
 }
 ```
@@ -187,7 +195,7 @@ Rewrites one campaign's name, description and goal. All three are written togeth
 
 ```json campaigns.details.update input
 {
-  "campaignId": "0123456789abcdef01234567",
+  "campaignId": "c0ffeec0ffeec0ffee000003",
   "description": "Outreach to fintech alumni who graduated in the last five years.",
   "goal": "Book five coffee chats before the end of the term.",
   "idempotencyKey": "example-idempotency-key-0011",
@@ -203,7 +211,7 @@ Moves one internship application to a stage and a priority. Both are written tog
 
 ```json jobs.applications.stage.update input
 {
-  "applicationId": "0123456789abcdef01234567",
+  "applicationId": "c0ffeec0ffeec0ffee000004",
   "idempotencyKey": "example-idempotency-key-0012",
   "priority": "HIGH",
   "stage": "APPLIED"
@@ -214,7 +222,7 @@ The completed summary reads `Application stage updated`.
 </Accordion>
 
 <Accordion title="actions.cancel">
-Withdraws a request the same connection proposed. It is the one write tool that takes no idempotency key, because the identifier it takes already names one request. [Withdraw a request](/mcp/guides/withdraw-a-request) is the procedure.
+Withdraws a request the same connection proposed. It is the one write tool that takes no idempotency key, because the identifier it takes already names one request. [Withdraw a review request](/mcp/guides/withdraw-a-request) is the procedure.
 </Accordion>
 
 </AccordionGroup>

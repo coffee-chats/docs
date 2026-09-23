@@ -1,18 +1,18 @@
 ---
 title: Permissions
-description: What a permission is, how the consent screen grants one, what happens when a permission is missing, and why the tool list is the honest answer.
+description: What a permission is, how the Authorize access page grants one, what happens when a permission is missing, and why the tool list is the honest answer.
 ---
 
 A permission is one named thing you allow a connection to do. After reading this page you will know how permissions are asked for and granted, what a connection can do with one, what it cannot do without one, and where to read the exact wording of each.
 
 ## Where a permission comes from
 
-An agent host asks for a list of permissions when it starts the sign-in flow. Coffee Chats checks that list before it shows you anything, and a request for a permission that is not grantable never reaches a sign-in page.
+An agent host asks for a list of permissions when it starts the sign-in flow. Coffee Chats checks that list before it shows you anything, and an ask for a permission that is not grantable never reaches a sign-in page.
 
-After you sign in, the consent screen shows the list it asked for, one line per permission, each with the sentence that says what the permission covers. Those sentences are the product's own wording. The [permissions reference](/mcp/scopes) is generated from the same source as the screen, so the wording on that page is the wording you will read.
+After you sign in, the Authorize access page shows the list it asked for, one line per permission, each with the sentence that says what the permission covers. Those sentences are the product's own wording. The [permissions reference](/mcp/scopes) is generated from the same source as that page, so the wording on it is the wording you will read.
 
 <Warning>
-There are no per-permission checkboxes. You approve the whole list or you deny it. If the list holds something you do not want, deny it and ask your agent host to request fewer permissions.
+There are no per-permission checkboxes. You approve the whole list or you deny it. If the list includes something you do not want, choose "Deny access". Most agent hosts do not let you change which permissions they ask for, so in practice the choice is to accept the whole list or not to connect.
 </Warning>
 
 The connection receives the permissions you approved and nothing else. Approving a wide list does not widen the tools; it only widens which of the 59 tools the connection may call.
@@ -47,9 +47,9 @@ A consent sentence is short, and a short sentence is always a little wider than 
 
 ## Permissions and the tools that need your approval
 
-Five tools need your approval in a browser as well as a permission. The permission lets an agent propose the change. It does not let the agent make it. [Safe writes and approvals](/mcp/writes) describes the difference, and [approvals](/mcp/approvals) describes the page you decide on.
+Five tools need your approval in a browser as well as a permission. The permission lets an agent propose the change as a review request. It does not let the agent make it. [Safe writes and approvals](/mcp/writes) describes the difference, and [approvals](/mcp/approvals) describes the page you decide on.
 
-A withdrawal follows the same rule. `actions.cancel` needs the permissions the proposing tool needed, so a connection that has lost a permission cannot withdraw work it could no longer propose.
+A withdrawal passes two separate gates. The catalogue requires `profile:write` on every call to `actions.cancel`, whatever the withdrawal is about, so a connection holding only `booking:write` can propose an event type change and cannot withdraw it. At the moment of the call, the connection must also still hold the scopes the creating tool recorded on the review request, so a connection that has lost a permission cannot withdraw work it could no longer propose.
 
 ## Next steps
 
@@ -58,6 +58,6 @@ A withdrawal follows the same rule. `actions.cancel` needs the permissions the p
     All seventeen, with the consent sentence and the tools each unlocks.
   </Card>
   <Card title="Sign-in and credentials" href="/mcp/authentication">
-    Where the consent screen sits in the sign-in flow.
+    Where the Authorize access page sits in the sign-in flow.
   </Card>
 </CardGroup>

@@ -3,7 +3,7 @@ title: Booking event type archive tool
 description: The one tool that proposes archiving one of your booking event types, or restoring one you archived, and waits for you to approve it in a browser.
 ---
 
-This tool proposes archiving one of your booking event types, or restoring one you archived, and waits for you to approve it in a browser. It needs the permission `booking:write`, which you grant on the consent screen when you connect.
+This tool proposes archiving one of your booking event types, or restoring one you archived, and waits for you to approve it in a browser. It needs the permission `booking:write`, which you grant on the Authorize access page when you connect.
 
 This page is generated from the connector's tool catalogue. It describes 1 tool. Every tool reads or writes only your own account.
 
@@ -11,13 +11,13 @@ This page is generated from the connector's tool catalogue. It describes 1 tool.
 
 - `booking:write`: Update the title, description and duration of your booking event types, and archive or restore them, after you approve the change
 
-The [permissions page](/mcp/scopes) lists every permission you can grant.
+The [permissions reference](/mcp/scopes) lists every permission you can grant.
 
 ## `booking_archive_event_type`
 
 What this changes: Propose to archive one of the authenticated student's booking event types so it stops appearing on their public page, or to restore one that was archived, which takes effect only after the student approves the change in a browser.
 
-Permissions: This tool needs `booking:write`, which the consent screen describes as "Update the title, description and duration of your booking event types, and archive or restore them, after you approve the change".
+Permissions: This tool needs `booking:write`, which the Authorize access page describes as "Update the title, description and duration of your booking event types, and archive or restore them, after you approve the change".
 
 Risk: `consequential`. This tool cannot change anything on its own. It proposes the change, and nothing happens until you open the Coffee Chats page it points to and approve exactly what is shown.
 
@@ -45,7 +45,7 @@ The agent sends exactly one of these shapes and never a mixture of them. Each sh
 
 ```json booking_archive_event_type input shape 1
 {
-  "eventTypeId": "0123456789abcdef01234567",
+  "eventTypeId": "c0ffeec0ffeec0ffee000005",
   "idempotencyKey": "example-idempotency-key-0009",
   "isActive": false
 }
@@ -165,8 +165,8 @@ A call that does not succeed carries one of these codes.
 
 | Code | What it means |
 | --- | --- |
-| `ACTION_DENIED` | Either you declined this request, or the connection was no longer allowed to make the change when Coffee Chats came to apply it. Nothing was written. |
-| `ACTION_EXPIRED` | The request ran out of time, either before you decided or before Coffee Chats could apply it. Nothing was written. |
+| `ACTION_DENIED` | Either you declined this review request, or the connection was no longer allowed to make the change when Coffee Chats came to apply it. Nothing was written. |
+| `ACTION_EXPIRED` | The review request ran out of time, either before you decided or before Coffee Chats could apply it. Nothing was written. |
 | `NOT_APPLIED` | Coffee Chats stopped before writing anything. Your data is exactly as it was. |
 | `OPERATION_CANCELLED` | The connection was revoked before the change started, so nothing was written. |
 | `OUTCOME_UNKNOWN` | Coffee Chats cannot prove whether the change was written and will not guess. Open your Coffee Chats page and look before you decide what to do. Do not ask the agent to retry with a new key, because that could apply the change twice. |

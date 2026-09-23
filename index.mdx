@@ -3,15 +3,17 @@ title: Coffee Chats MCP
 description: How an agent connects to your Coffee Chats account, what you can let it do, and how you end the connection.
 ---
 
-Coffee Chats MCP lets a program such as Claude act on your Coffee Chats account for you. That program is called an agent. This page defines the words the rest of the documentation uses, gives the addresses you need, and points you at the page that answers your question. After reading it you will know what a connection is, what it can reach, and where to start.
+MCP stands for Model Context Protocol. It is an open standard that lets one program ask another service to run a single named action, such as reading your contacts. Each named action is called a tool. Coffee Chats MCP lets a program such as Claude call those tools on your Coffee Chats account for you, and that program is called an agent.
 
-MCP is the Model Context Protocol. It is an open standard that lets an agent ask another service to run one named action, such as reading your contacts. Each named action is called a tool. A connection carries only the permissions you granted, and you can end it whenever you want.
+This page defines the words the rest of the documentation uses, gives the addresses you need, and points you at the page that answers your question. After reading it you will know what a connection is, what it can reach, and where to start.
+
+A connection carries only the permissions you granted. You can end a connection at any time.
 
 <Info>
 Across the whole tool catalogue, no tool sends an email and no tool spends credits. An agent cannot email anybody for you, and it cannot spend your credits.
 </Info>
 
-An agent host is the application your agent runs inside, such as the Claude Code command-line tool or Claude on the web. Coffee Chats has not yet run a connection with any agent host from end to end, so these pages do not promise that your host will work. The connector itself is live, and the [quickstart](/mcp/quickstart) is the procedure to follow. The [compatibility page](/mcp/compatibility) says which hosts are registered today.
+Coffee Chats has not yet tested a full connection with any agent host. The connector is running and the steps in the [quickstart](/mcp/quickstart) are correct as written, but your host may behave differently. If a step does not match what you see, stop and report it rather than working around it. The [compatibility page](/mcp/compatibility) says which hosts are registered today.
 
 ## The words this documentation uses
 
@@ -21,11 +23,14 @@ The same word means the same thing on every page.
 | --- | --- |
 | Connector | The Coffee Chats side of a connection. It is the program that answers an agent's tool calls at the connector address below. |
 | Agent | A program that does work for you by calling tools instead of using the Coffee Chats screens. |
-| Agent host | The application the agent runs inside. |
+| Agent host | The application the agent runs inside, such as the Claude Code command-line tool or Claude on the web. |
 | Permission | One named thing you allow a connection to do, such as reading your contacts. |
 | Connection | One agent host's authorized access to your account, holding the permissions you granted it. |
-| Request | One change an agent has proposed and cannot make by itself. |
-| Approval | Your decision in a browser about one request. |
+| Authorize access page | The Coffee Chats page where you grant or refuse the permissions an agent host asked for. It is headed "Authorize access". |
+| Review request | One change an agent has proposed and cannot make on its own. It waits until you approve it or decline it in your browser. |
+| Approval | Your decision in a browser about one review request. |
+| Credit | The unit Coffee Chats meters its paid features in. Your balance lives in the app, and the billing tools can read it. No tool spends one. |
+| Call | One message an agent sends to the connector over the network. This documentation never calls that a request, so that "review request" always means the thing you approve. |
 
 ## Service endpoints
 
@@ -38,13 +43,15 @@ You use the first two addresses yourself. Your agent host reads the last two on 
 | Protected resource metadata | `https://mcp.coffeechats.me/.well-known/oauth-protected-resource/mcp` |
 | Authorization server metadata | `https://mcp.coffeechats.me/oauth/mcp/.well-known/openid-configuration` |
 
+The last two addresses hold configuration that your agent host reads automatically during sign-in. They contain no account data, and you do not need to understand them to use the connector.
+
 Give the connector address to your agent host. Open the connections page yourself to see what is connected and to end a connection.
 
 ## What reading this documentation does
 
-Reading these pages installs nothing. It does not start sign-in, and it does not grant an agent anything on your behalf. Only the consent screen does that, and only after you sign in to Coffee Chats yourself.
+Reading these pages installs nothing. It does not start sign-in, and it does not grant an agent anything on your behalf. Only the Authorize access page does that, and only after you sign in to Coffee Chats yourself.
 
-Mintlify is the service that publishes this documentation site. Its documentation search connector is a separate thing from the Coffee Chats action connector. Documentation search is not enabled for this site. If it is ever enabled, it will search these published pages only, and connecting to it will not authorize an agent to reach your account. No page here carries any account data. See [compatibility](/mcp/compatibility) for the difference.
+This documentation site is published by a company called Mintlify. Mintlify can offer a search tool for documentation pages. That search tool is not enabled here. Even if it were enabled, it would search these published pages only. It would not give any agent access to your Coffee Chats account, because no page on this site contains account data. See [compatibility](/mcp/compatibility) for the difference.
 
 ## Next steps
 
@@ -56,7 +63,7 @@ Mintlify is the service that publishes this documentation site. Its documentatio
     What the tools reach, and the parts of Coffee Chats no tool reaches.
   </Card>
   <Card title="Permissions" href="/mcp/permissions">
-    How the consent screen works, and what each permission buys.
+    How the Authorize access page works, and what each permission buys.
   </Card>
   <Card title="Tool reference" href="/mcp/tools/overview">
     Every tool, generated from the connector's own catalogue.

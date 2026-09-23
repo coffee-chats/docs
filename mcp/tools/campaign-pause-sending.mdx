@@ -3,7 +3,7 @@ title: Campaign pause tool
 description: The one tool that pauses a campaign's sending.
 ---
 
-This tool pauses a campaign's sending. It needs the permission `campaigns:write`, which you grant on the consent screen when you connect.
+This tool pauses a campaign's sending. It needs the permission `campaigns:write`, which you grant on the Authorize access page when you connect.
 
 This page is generated from the connector's tool catalogue. It describes 1 tool. Every tool reads or writes only your own account.
 
@@ -11,7 +11,7 @@ This page is generated from the connector's tool catalogue. It describes 1 tool.
 
 - `campaigns:write`: Pause a campaign's sending, and change a campaign's name, description and goal
 
-The [permissions page](/mcp/scopes) lists every permission you can grant.
+The [permissions reference](/mcp/scopes) lists every permission you can grant.
 
 ## `campaign_pause_sending`
 
@@ -19,7 +19,7 @@ What this changes: Stop a campaign from sending more mail.
 
 The stored sending state becomes PAUSED, and the delivery guard then defers that campaign's queued mail and retries it later. It is a hold, not a withdrawal, and its bounds are real: a message already queued by a send-now batch is still dispatched, a drip tick that has already selected this campaign can still queue the rest of that batch, follow-up selection does not read the sending state at all, and nothing already sent can be recalled. There is no tool to resume sending; the student does that in the app.
 
-Permissions: This tool needs `campaigns:write`, which the consent screen describes as "Pause a campaign's sending, and change a campaign's name, description and goal".
+Permissions: This tool needs `campaigns:write`, which the Authorize access page describes as "Pause a campaign's sending, and change a campaign's name, description and goal".
 
 Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
 
@@ -34,7 +34,7 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 
 ```json campaign_pause_sending input
 {
-  "campaignId": "0123456789abcdef01234567",
+  "campaignId": "c0ffeec0ffeec0ffee000003",
   "idempotencyKey": "example-idempotency-key-0010"
 }
 ```

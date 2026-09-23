@@ -3,7 +3,7 @@ title: Contact tools
 description: Tools that read your contacts, their notes and tags, and your network counts, and replace the notes and the tags on one contact.
 ---
 
-These tools read your contacts, their notes and tags, and your network counts, and replace the notes and the tags on one contact. They need the permissions `contacts:read` and `contacts:write`, which you grant on the consent screen when you connect.
+These tools read your contacts, their notes and tags, and your network counts, and replace the notes and the tags on one contact. They need the permissions `contacts:read` and `contacts:write`, which you grant on the Authorize access page when you connect.
 
 This page is generated from the connector's tool catalogue. It describes 8 tools. Every tool reads or writes only your own account.
 
@@ -12,13 +12,13 @@ This page is generated from the connector's tool catalogue. It describes 8 tools
 - `contacts:read`: Read your contacts and network information
 - `contacts:write`: Update the notes and tags on your contacts
 
-The [permissions page](/mcp/scopes) lists every permission you can grant.
+The [permissions reference](/mcp/scopes) lists every permission you can grant.
 
 ## `contacts.list`
 
 List every authenticated student contact, including DO_NOT_CONTACT records, with measured pagination.
 
-Permissions: This tool needs `contacts:read`, which the consent screen describes as "Read your contacts and network information".
+Permissions: This tool needs `contacts:read`, which the Authorize access page describes as "Read your contacts and network information".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -82,7 +82,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one authenticated student contact by id or its owner-scoped generated slug.
 
-Permissions: This tool needs `contacts:read`, which the consent screen describes as "Read your contacts and network information".
+Permissions: This tool needs `contacts:read`, which the Authorize access page describes as "Read your contacts and network information".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -110,7 +110,7 @@ The agent sends exactly one of these shapes and never a mixture of them. Each sh
 
 ```json contacts.get input shape 1
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000001"
 }
 ```
 
@@ -163,7 +163,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read one authenticated student contact note in measured fragments.
 
-Permissions: This tool needs `contacts:read`, which the consent screen describes as "Read your contacts and network information".
+Permissions: This tool needs `contacts:read`, which the Authorize access page describes as "Read your contacts and network information".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -178,7 +178,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json contacts.notes.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000001"
 }
 ```
 
@@ -204,7 +204,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Read every authenticated student contact tag in measured fragments.
 
-Permissions: This tool needs `contacts:read`, which the consent screen describes as "Read your contacts and network information".
+Permissions: This tool needs `contacts:read`, which the Authorize access page describes as "Read your contacts and network information".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -219,7 +219,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ```json contacts.tags.get input
 {
-  "id": "0123456789abcdef01234567"
+  "id": "c0ffeec0ffeec0ffee000001"
 }
 ```
 
@@ -245,7 +245,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Count every authenticated student contact, including DO_NOT_CONTACT records, by status and due follow-up state.
 
-Permissions: This tool needs `contacts:read`, which the consent screen describes as "Read your contacts and network information".
+Permissions: This tool needs `contacts:read`, which the Authorize access page describes as "Read your contacts and network information".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -281,7 +281,7 @@ A failed call returns one protocol error whose text is exactly `Tool call failed
 
 Count the authenticated student network population after excluding DO_NOT_CONTACT records.
 
-Permissions: This tool needs `contacts:read`, which the consent screen describes as "Read your contacts and network information".
+Permissions: This tool needs `contacts:read`, which the Authorize access page describes as "Read your contacts and network information".
 
 Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
 
@@ -322,7 +322,7 @@ What this changes: Replace the private notes on one of the authenticated student
 
 The whole note is replaced rather than appended to, at most 8000 characters, and the write fails without changing anything if anybody edited that contact's notes first.
 
-Permissions: This tool needs `contacts:write`, which the consent screen describes as "Update the notes and tags on your contacts".
+Permissions: This tool needs `contacts:write`, which the Authorize access page describes as "Update the notes and tags on your contacts".
 
 Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
 
@@ -332,13 +332,13 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 | --- | --- | --- | --- |
 | `contactId` | string | yes | pattern `^[a-f0-9]{24}$` |
 | `idempotencyKey` | string | yes | 16 to 128 characters |
-| `notes` | string | yes | none stated |
+| `notes` | string | yes | at most 8,000 code points |
 
 ### Example call
 
 ```json contacts.notes.update input
 {
-  "contactId": "0123456789abcdef01234567",
+  "contactId": "c0ffeec0ffeec0ffee000001",
   "idempotencyKey": "example-idempotency-key-0006",
   "notes": "Met at the spring fintech mixer. Follow up in April about the referral."
 }
@@ -435,7 +435,7 @@ What this changes: Replace the tags on one of the authenticated student's own co
 
 The whole list is replaced rather than merged, at most 10 tags of 60 characters each, and the write fails without changing anything if anybody edited that contact's tags first.
 
-Permissions: This tool needs `contacts:write`, which the consent screen describes as "Update the notes and tags on your contacts".
+Permissions: This tool needs `contacts:write`, which the Authorize access page describes as "Update the notes and tags on your contacts".
 
 Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
 
@@ -445,13 +445,13 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 | --- | --- | --- | --- |
 | `contactId` | string | yes | pattern `^[a-f0-9]{24}$` |
 | `idempotencyKey` | string | yes | 16 to 128 characters |
-| `tags` | array | yes | none stated |
+| `tags` | array | yes | at most 10 items; each item at most 60 code points |
 
 ### Example call
 
 ```json contacts.tags.update input
 {
-  "contactId": "0123456789abcdef01234567",
+  "contactId": "c0ffeec0ffeec0ffee000001",
   "idempotencyKey": "example-idempotency-key-0007",
   "tags": [
     "fintech",

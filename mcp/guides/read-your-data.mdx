@@ -25,6 +25,12 @@ Once the connection is authorized, list tools and you receive the whole catalogu
 
 It returns the authenticated student's own profile. If it returns that student's data, the connection is working end to end.
 
+## Know the largest result before you ask for one
+
+Every tool declares a maximum result size, and the connector measures the whole answer as it goes over the wire, wrapping JSON included. The largest result any tool in the catalogue can return is 16,384 bytes. `profile.job_search_stage.get` and all fifteen write tools are capped at 4,096 instead, and each tool's own reference page prints its number.
+
+A result that would exceed its budget is never truncated. A tool whose single stored value can grow past the budget returns a measured fragment and a cursor instead, which the section below reassembles. Any other tool fails with the fixed failure text rather than sending a partial answer, which is why the reads are narrow and paged.
+
 ## Page a list with a cursor
 
 A list tool takes an optional `cursor` and returns `nextCursor` beside its items. Send the value back unchanged on the next call to continue, and stop when `nextCursor` is null.
@@ -40,7 +46,7 @@ The cursor is opaque. The only correct thing to do with it is to send it back un
 Some tools read a single stored value that can be larger than the tool's result budget. Rather than truncate it, the tool returns a measured fragment. Ask for one note:
 
 ```json contacts.notes.get input
-{ "id": "0123456789abcdef01234567" }
+{ "id": "c0ffeec0ffeec0ffee000001" }
 ```
 
 The first answer carries the first chunk and a cursor. A real call cuts each chunk at the tool's byte budget, so the chunks below are short enough to fit on this page instead:
@@ -48,12 +54,12 @@ The first answer carries the first chunk and a cursor. A real call cuts each chu
 ```json contacts.notes.get result
 {
   "fragment": {
-    "id": "0123456789abcdef01234567",
+    "id": "c0ffeec0ffeec0ffee000001",
     "jsonChunk": "\"Met at the spring fintech mixer. Follow u",
     "offset": 0,
     "complete": false
   },
-  "nextCursor": "eyJpZCI6IjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2NyIsIm9mZnNldCI6NDJ9"
+  "nextCursor": "eyJpZCI6ImMwZmZlZWMwZmZlZWMwZmZlZTAwMDAwMSIsIm9mZnNldCI6NDJ9"
 }
 ```
 
@@ -62,7 +68,7 @@ The `id` names the value being fragmented, `offset` says where this chunk starts
 ```json contacts.notes.get result
 {
   "fragment": {
-    "id": "0123456789abcdef01234567",
+    "id": "c0ffeec0ffeec0ffee000001",
     "jsonChunk": "p in April about the referral.\"",
     "offset": 42,
     "complete": true
@@ -99,6 +105,6 @@ A call to a tool whose permission was not granted arrives in exactly this shape,
     The first write, with its replay and its conflict.
   </Card>
   <Card title="Limits and budgets" href="/mcp/limits">
-    The request limits and the result size budgets these reads sit under.
+    The call limits and the result size budgets these reads sit under.
   </Card>
 </CardGroup>

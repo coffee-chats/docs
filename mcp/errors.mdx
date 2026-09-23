@@ -1,43 +1,76 @@
 ---
 title: Error codes
-description: Every code the Coffee Chats connector publishes, where it arrives, what causes it and what to do about it.
+description: Every code the Coffee Chats connector publishes, where it arrives, what causes it, what to do about it, and which HTTP status carries it.
 ---
 
 This page lists every error code the connector publishes. Each row says where the code arrives, what caused it and the action to take. A code outside this list is not something Coffee Chats sends. [Handle errors and retries](/mcp/guides/handle-errors) is the procedure that uses this table.
 
+## Where these codes arrive, and under which HTTP status
+
+Every code on this page arrives inside a normal, successful protocol response. The HTTP status is 200 in all of them, and so is the status on a read tool's fixed failure text. An agent that branches on HTTP status alone will never see any of these.
+
+Only four HTTP statuses mean anything to a caller, and none of them carries a code from this page.
+
+| Status | What it means | What to do |
+| --- | --- | --- |
+| 200 | The protocol answered. Every tool result and every tool-level failure, including all the codes below, arrives this way. | Read the result. |
+| 401 | The call carried no access credential, or one the connector would not accept. | Renew the credential, or start authorization again. |
+| 413 | The body of the call was larger than 64 kilobytes. | Send less. No tool input the catalogue defines comes close to that bound. |
+| 429 | A rate limit refused the call. | Wait, then call again. The headers below say how long. |
+
+A 429 answer carries these headers: `RateLimit-Policy`, `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` and `Retry-After`. Wait the number of seconds in `Retry-After` before calling again. The [limits](/mcp/limits) page states what each limiter counts.
+
 ## Codes in a failing result
 
-These arrive inside the `error` object of a structured result from one of the fifteen write tools. In every one of them, nothing was written.
+These arrive inside the `error` object of a write result whose `status` is `failed`. In every one of them, nothing was written. [The result object](/mcp/writes) describes the object they sit in.
 
 | Code | Cause | Action |
 | --- | --- | --- |
-| `VERSION_CONFLICT` | The value changed after the agent read it, or the same idempotency key was sent again with different input. On `actions.cancel` it means the request was no longer withdrawable. | Read the value again and make the change from what is there now, with a new key. After a refused withdrawal, poll the request instead. |
-| `ACTION_DENIED` | The student declined the request, or the connection was no longer allowed to make the change when Coffee Chats came to apply it. | Stop. Do not call again. Tell the student the change was refused. |
-| `ACTION_EXPIRED` | The change ran out of time before it started, or the request expired before the student decided. | Ask once more with a new key, and only if the student still wants it. |
-| `NOT_APPLIED` | Coffee Chats can prove it stopped before writing anything. On an approved `booking_archive_event_type` request it also means the archive would have left the student with no active event type. | Make the change again with a new key. After a refused archive, read the student's event types again and do not propose the archive until another one is active. |
+| `VERSION_CONFLICT` | The value changed after the agent read it, or the same idempotency key was sent again with different input. On `actions.cancel` it means the review request was no longer withdrawable. | Read the value again and make the change from what is there now, with a new key. After a refused withdrawal, poll the review request instead. |
+| `ACTION_DENIED` | The student declined the review request, or the connection was no longer allowed to make the change when Coffee Chats came to apply it. | Stop. Do not call again. Tell the student the change was refused. |
+| `ACTION_EXPIRED` | The change ran out of time before it started, or the review request expired before the student decided. | Ask once more with a new key, and only if the student still wants it. |
+| `NOT_APPLIED` | Coffee Chats can prove it stopped before writing anything. On an approved `booking_archive_event_type` review request it also means the archive would have left the student with no active event type. | Make the change again with a new key. After a refused archive, read the student's event types again and do not propose the archive until another one is active. |
 | `SERVICE_UNAVAILABLE` | Coffee Chats could not do the work just now. | Try again later with a new key. |
 
 ## Codes in a cancelled or uncertain result
 
 | Code | Where it arrives | Cause | Action |
 | --- | --- | --- | --- |
-| `OPERATION_CANCELLED` | Cancelled result | On a proposal, the connection was disconnected before the change started, so nothing was written. On `actions.cancel` it is the success answer: the request is withdrawn. | After a disconnect, stop and ask the student to authorize again. After a withdrawal, tell the student the request is gone and nothing was changed. |
-| `OUTCOME_UNKNOWN` | Uncertain result | Coffee Chats cannot prove whether the change was written, and will not guess. | Read the value back and treat what is stored as the answer. Do not send the change again under a new key until you have read what is stored. [Settle an uncertain result](/mcp/guides/settle-an-uncertain-result) has the read for every write. |
+| `OPERATION_CANCELLED` | A result whose `status` is `cancelled` | On a review request, the connection was disconnected before the change started, so nothing was written. On `actions.cancel` it is the success answer: the review request is withdrawn. | After a disconnect, stop and ask the student to authorize again. After a withdrawal, tell the student the review request is gone and nothing was changed. |
+| `OUTCOME_UNKNOWN` | A result whose `status` is `uncertain` | Coffee Chats cannot prove whether the change was written, and will not guess. | Read the value back and treat what is stored as the answer. Do not send the change again under a new key until you have read what is stored. [Settle an uncertain result](/mcp/guides/settle-an-uncertain-result) has the read for every write. |
 
 ## Codes in a retry hint
 
-These two never arrive in a failing result. They ride in the metadata beside an accepted result, and nothing has failed when you see one.
+These two never arrive in a failing result. They ride under `_meta` beside an accepted result, and nothing has failed when you see one.
 
 | Code | Cause | Action |
 | --- | --- | --- |
 | `PERMIT_BACKPRESSURE` | Too much work is already running on this connection. | Wait for the stated delay and call again with the same key. |
 | `PERMIT_CONTENTION` | Another call was holding the same slot. | Wait for the stated delay and call again with the same key. |
 
+## What the `retryable` boolean is worth
+
+Every `error` object carries a `retryable` boolean, and every retry hint carries one too. They do not mean the same thing, so read them separately.
+
+In a retry hint, `retryable` is always `true`. It is fixed by the contract and tells you nothing the hint's presence had not already told you.
+
+In an `error` object, `retryable` is `false` on every failure the connector maps today, with one exception: `OUTCOME_UNKNOWN` copies the flag from the record it is reporting, so it can arrive as `true`.
+
+<Warning>
+Do not branch on `retryable` alone. A `true` on `OUTCOME_UNKNOWN` does not mean the change may be sent again. It means the outcome is unknown and a read has to settle it first. Use the Action column above, which is the authority.
+</Warning>
+
+## How long to keep retrying
+
+The connector sets no retry ceiling and no backoff schedule. The only delay it ever states is `retryAfterMs` in a retry hint, which the contract bounds to between 1 and 5,000 milliseconds and which both write paths that issue one set to 1,000 today.
+
+Everything else is your choice. The following is guidance, not a rule the connector enforces. Wait the delay the hint gives you. Cap the number of attempts at a small number your agent can explain to a student. Stop once a result is `completed`, `failed`, `cancelled` or `uncertain`, because nothing moves out of those four. One connection may make 120 calls a minute, and a loop spends that budget on one change.
+
 ## Failures that carry no code
 
 Every read tool reports every failure with one fixed message and no code. A write that fails before it produces a result of its own arrives the same way, and so does a call to a tool whose permission was not granted. There is nothing to branch on. The reason is withheld on purpose, because the reason could itself describe data the connection was not allowed to see.
 
-A request refused for rate limiting carries no code from this page either. It is answered with the status `429` and standard rate-limit headers, and the [limits](/mcp/limits) page states what each limiter counts.
+A call refused for rate limiting carries no code from this page either. It is the 429 answer described at the top, and the [limits](/mcp/limits) page states what each limiter counts.
 
 ## Next steps
 

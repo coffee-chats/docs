@@ -1,25 +1,29 @@
 ---
-title: Withdraw a request
+title: Withdraw a review request
 description: Take back a proposal the student has not decided yet, read the two answers the withdrawal can give, and know what the student sees afterwards.
 ---
 
-An agent can take back a request it made, while the student has still not decided and no work has started. This guide shows you how, what the two possible answers mean, and what the student sees once a request is withdrawn.
+An agent can take back a review request it made, while the student has still not decided and no work has started. This guide shows you how, what the two possible answers mean, and what the student sees once a request is withdrawn.
 
 ## Send the withdrawal
 
-The tool is `actions.cancel`. It takes the request identifier and nothing else, and it is the one write tool that needs no idempotency key, because the identifier already names one request:
+The tool is `actions.cancel`. Its whole input is `operationId`, the identifier the proposing tool returned, and it is the one write tool that takes no idempotency key, because that identifier already names one review request. Sending it a key is refused before the tool runs:
 
 ```json actions.cancel input
 { "operationId": "0123456789abcdef01234567" }
 ```
 
-It needs the permissions the proposing tool needed, so a connection that has lost a permission cannot withdraw work it could no longer propose.
+Two separate permission gates apply, and a call has to pass both.
+
+The catalogue requires `profile:write` on every call to `actions.cancel`, whatever the withdrawal is about. A connection that holds only `booking:write` can propose an event type change and cannot withdraw it.
+
+At the moment of the call, the connection must also still hold the scopes the creating tool recorded on the review request. A connection that has lost a permission cannot withdraw work it could no longer propose.
 
 ## Read the answer
 
 There are two outcomes and no third.
 
-A withdrawal that succeeds, and a repeat of one that already succeeded, both answer with a cancelled result. `OPERATION_CANCELLED` is the success here:
+A withdrawal that succeeds, and a repeat of one that already succeeded, both answer with a result whose `status` is `cancelled`. There is no `tag` on either answer this tool gives. `OPERATION_CANCELLED` is the success here:
 
 ```json actions.cancel result
 {
@@ -38,7 +42,7 @@ A withdrawal that succeeds, and a repeat of one that already succeeded, both ans
 Withdrawing twice is the same success. A repeat is safe.
 </Info>
 
-Anything else answers with a conflict. The student had already decided the request, or it had expired, or Coffee Chats had already started applying it:
+Anything else answers with a conflict. The student had already decided the review request, or it had expired, or Coffee Chats had already started applying it:
 
 ```json actions.cancel result
 {
@@ -53,15 +57,15 @@ Anything else answers with a conflict. The student had already decided the reque
 }
 ```
 
-Poll the request with its own tool to find out which of those happened. Do not retry the withdrawal: the request has moved on, and calling again returns the same conflict.
+Poll the review request with its own tool to find out which of those happened, by calling that tool with the same `operationId`. Do not retry the withdrawal: the review request has moved on, and calling again returns the same conflict.
 
 ## Only your own requests
 
-A withdrawal reaches only a request the calling connection itself created. An identifier that names anything else is refused with the fixed error text every read failure uses, and that answer says nothing about whether such a request exists.
+A withdrawal reaches only a review request the calling connection itself created. An identifier that names anything else is refused with the fixed error text every read failure uses, and that answer says nothing about whether such a review request exists.
 
 ## What the student sees
 
-A withdrawn request leaves the student's waiting list with no notification. It appears under the section headed "Recent decisions" on the same page, with one sentence saying how it ended, so the student can still see what happened to it.
+A withdrawn review request leaves the student's waiting list with no notification. It appears under the section headed "Recent decisions" on the same page, with one sentence saying how it ended, so the student can still see what happened to it.
 
 ## Next steps
 
@@ -70,6 +74,6 @@ A withdrawn request leaves the student's waiting list with no notification. It a
     The proposal this withdrawal takes back.
   </Card>
   <Card title="Approvals" href="/mcp/approvals">
-    What the student sees while a request is waiting.
+    What the student sees while a review request is waiting.
   </Card>
 </CardGroup>
