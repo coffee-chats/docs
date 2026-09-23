@@ -1,9 +1,25 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "Coffee Chats MCP",
-  "theme": "mint",
+  "theme": "almond",
   "colors": {
-    "primary": "#5C4033"
+    "primary": "#4A2C1D",
+    "light": "#C8A27A",
+    "dark": "#E14E2C"
+  },
+  "background": {
+    "color": {
+      "light": "#FFFBF6",
+      "dark": "#2A1710"
+    }
+  },
+  "fonts": {
+    "heading": {
+      "family": "Plus Jakarta Sans"
+    },
+    "body": {
+      "family": "Hanken Grotesk"
+    }
   },
   "favicon": "/favicon.png",
   "logo": {
