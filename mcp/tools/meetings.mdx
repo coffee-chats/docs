@@ -1,0 +1,586 @@
+---
+title: Meeting tools
+description: Tools that read your meetings, their notes, outcomes, insights, thank-you drafts and transcripts, and write one meeting's notes and its recorded outcome.
+---
+
+These tools read your meetings, their notes, outcomes, insights, thank-you drafts and transcripts, and write one meeting's notes and its recorded outcome. They need the permissions `mail:read`, `meetings:read`, `meetings:transcript:read` and `meetings:write`, which you grant on the consent screen when you connect.
+
+This page is generated from the connector's tool catalogue. It describes 9 tools. Every tool reads or writes only your own account.
+
+## Permissions this page needs
+
+- `mail:read`: Read your outreach templates and thank-you drafts
+- `meetings:read`: Read your meetings and meeting details
+- `meetings:transcript:read`: Read meeting transcripts when participant consent allows it
+- `meetings:write`: Update your meeting notes and meeting outcome
+
+The [permissions page](/mcp/scopes) lists every permission you can grant.
+
+## `meetings.list`
+
+List the authenticated student's non-practice meeting records with measured pagination.
+
+Permissions: This tool needs `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `limit` | integer | no | from 1 to 20 |
+| `status` | string | no | one of `SCHEDULED`, `IN_PROGRESS`, `COMPLETED`, `CANCELED`, `NO_SHOW` |
+
+### Example call
+
+```json
+{
+  "limit": 10,
+  "status": "COMPLETED"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "meetings",
+  "nextCursor"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "fragment",
+  "meetings",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `meetings.get`
+
+Read one authenticated student meeting record without guest credentials or transcript content.
+
+Permissions: This tool needs `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "meeting"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "fragment",
+  "meeting",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `meetings.notes.get`
+
+Read one authenticated student meeting note in measured Unicode-safe fragments.
+
+Permissions: This tool needs `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+A result carries these top-level fields:
+
+```json
+[
+  "fragment",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `meetings.outcome.get`
+
+Read bounded meeting outcome metadata, with explicit measured views for owner-authored notes or takeaways.
+
+Permissions: This tool needs `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+| `include` | string | no | one of `key_takeaways`, `user_notes` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567",
+  "include": "key_takeaways"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "outcome"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "fragment",
+  "nextCursor",
+  "outcome"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `meetings.insights.get`
+
+Read bounded safe meeting insights without transcript-derived quotes, rationale, or narrative evidence.
+
+Permissions: This tool needs `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "insights"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "fragment",
+  "insights",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `meetings.thank_you.get`
+
+Read the authenticated student's thank-you draft without provider identifiers or attachment file ids.
+
+Permissions: This tool needs `mail:read`, which the consent screen describes as "Read your outreach templates and thank-you drafts", and `meetings:read`, which the consent screen describes as "Read your meetings and meeting details".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "thankYou"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "fragment",
+  "nextCursor",
+  "thankYou"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `meetings.transcript.list`
+
+Read a consented, retained meeting transcript without speaker or provider identifiers.
+
+Permissions: This tool needs `meetings:transcript:read`, which the consent screen describes as "Read meeting transcripts when participant consent allows it".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "nextCursor",
+  "segments"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "fragment",
+  "nextCursor",
+  "segments"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `meetings.notes.update`
+
+What this changes: Replace the private preparation notes on one of the authenticated student's own meetings, with durable idempotency.
+
+This writes the meeting's own notes field and not the note the outcome form captures, at most 10000 characters, and the write fails without changing anything if anybody edited those notes first. A practice session is not writable.
+
+Permissions: This tool needs `meetings:write`, which the consent screen describes as "Update your meeting notes and meeting outcome".
+
+Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `idempotencyKey` | string | yes | 16 to 128 characters |
+| `meetingId` | string | yes | pattern `^[a-f0-9]{24}$` |
+| `notes` | string | yes | none stated |
+
+### Example call
+
+```json
+{
+  "idempotencyKey": "example-idempotency-key-0008",
+  "meetingId": "0123456789abcdef01234567",
+  "notes": "Ask about the summer internship pipeline and how referrals are submitted."
+}
+```
+
+### Result
+
+A result is never larger than 4,096 bytes.
+
+This tool's result takes one of these 4 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1, where `tag` is `completed`, carries these top-level fields:
+
+```json
+[
+  "operationId",
+  "operationStatus",
+  "result",
+  "scenario",
+  "tag"
+]
+```
+
+Shape 2, where `tag` is `accepted`, carries these top-level fields:
+
+```json
+[
+  "operationId",
+  "operationStatus",
+  "scenario",
+  "tag"
+]
+```
+
+Shape 3, where `status` is `failed`, carries these top-level fields:
+
+```json
+[
+  "error",
+  "operationId",
+  "scenario",
+  "status"
+]
+```
+
+Shape 4, where `status` is `uncertain`, carries these top-level fields:
+
+```json
+[
+  "error",
+  "operationId",
+  "scenario",
+  "status"
+]
+```
+
+### The result may carry a retry hint
+
+A call can be accepted and still ask the agent to come back later. When that happens the result is an accepted result and not a failure, and it carries a hint beside it holding one of these codes and a delay in milliseconds. Nothing has gone wrong and nothing has been written yet.
+
+| Code | What it means |
+| --- | --- |
+| `PERMIT_BACKPRESSURE` | Too much work is already running on this connection. The agent should wait for the stated delay and call the tool again. |
+| `PERMIT_CONTENTION` | Another call was holding the same slot. The agent should wait for the stated delay and call the tool again. |
+
+### Errors
+
+A call that does not succeed carries one of these codes.
+
+| Code | What it means |
+| --- | --- |
+| `ACTION_DENIED` | Coffee Chats would not let this connection make the change, so nothing was written. The connection may have been revoked, or it may no longer hold the permission this tool needs. |
+| `ACTION_EXPIRED` | Coffee Chats did not finish the change inside the short window it allows itself, and stopped rather than write late. Nothing was written. Ask the agent to make the change again. |
+| `NOT_APPLIED` | Coffee Chats stopped before writing anything. Your data is exactly as it was. |
+| `OUTCOME_UNKNOWN` | Coffee Chats cannot prove whether the change was written and will not guess. Open your Coffee Chats page and look before you decide what to do. Do not ask the agent to retry with a new key, because that could apply the change twice. |
+| `SERVICE_UNAVAILABLE` | Coffee Chats could not do the work just now and wrote nothing. Try again later. |
+| `VERSION_CONFLICT` | Your stored preference changed after the agent read it, so nothing was written. Ask the agent to read it again and make the change from what is there now. |
+
+## `meetings.outcome.update`
+
+What this changes: Record the outcome of one of the authenticated student's own meetings: the star rating from 1 to 5 or null to clear it, the referral outcome, up to 10 key takeaways and the outcome notes, together, with durable idempotency.
+
+It does not mark a thank-you as sent, it does not schedule a follow-up and it does not move the linked contact, all of which the student does in the app. The write fails without changing anything if anybody recorded any part of that outcome first.
+
+Permissions: This tool needs `meetings:write`, which the consent screen describes as "Update your meeting notes and meeting outcome".
+
+Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `idempotencyKey` | string | yes | 16 to 128 characters |
+| `keyTakeaways` | array | yes | none stated |
+| `meetingId` | string | yes | pattern `^[a-f0-9]{24}$` |
+| `outcomeNotes` | string | yes | none stated |
+| `rating` | integer or null | yes | from 1 to 5 |
+| `referralOutcome` | null or string | yes | one of `GOT_REFERRAL`, `MAYBE_LATER`, `NO_REFERRAL`, `NOT_DISCUSSED` |
+
+### Example call
+
+```json
+{
+  "idempotencyKey": "example-idempotency-key-0009",
+  "keyTakeaways": [
+    "They offered to refer me in April."
+  ],
+  "meetingId": "0123456789abcdef01234567",
+  "outcomeNotes": "A warm conversation that ended with a clear next step.",
+  "rating": 5,
+  "referralOutcome": "GOT_REFERRAL"
+}
+```
+
+### Result
+
+A result is never larger than 4,096 bytes.
+
+This tool's result takes one of these 4 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1, where `tag` is `completed`, carries these top-level fields:
+
+```json
+[
+  "operationId",
+  "operationStatus",
+  "result",
+  "scenario",
+  "tag"
+]
+```
+
+Shape 2, where `tag` is `accepted`, carries these top-level fields:
+
+```json
+[
+  "operationId",
+  "operationStatus",
+  "scenario",
+  "tag"
+]
+```
+
+Shape 3, where `status` is `failed`, carries these top-level fields:
+
+```json
+[
+  "error",
+  "operationId",
+  "scenario",
+  "status"
+]
+```
+
+Shape 4, where `status` is `uncertain`, carries these top-level fields:
+
+```json
+[
+  "error",
+  "operationId",
+  "scenario",
+  "status"
+]
+```
+
+### The result may carry a retry hint
+
+A call can be accepted and still ask the agent to come back later. When that happens the result is an accepted result and not a failure, and it carries a hint beside it holding one of these codes and a delay in milliseconds. Nothing has gone wrong and nothing has been written yet.
+
+| Code | What it means |
+| --- | --- |
+| `PERMIT_BACKPRESSURE` | Too much work is already running on this connection. The agent should wait for the stated delay and call the tool again. |
+| `PERMIT_CONTENTION` | Another call was holding the same slot. The agent should wait for the stated delay and call the tool again. |
+
+### Errors
+
+A call that does not succeed carries one of these codes.
+
+| Code | What it means |
+| --- | --- |
+| `ACTION_DENIED` | Coffee Chats would not let this connection make the change, so nothing was written. The connection may have been revoked, or it may no longer hold the permission this tool needs. |
+| `ACTION_EXPIRED` | Coffee Chats did not finish the change inside the short window it allows itself, and stopped rather than write late. Nothing was written. Ask the agent to make the change again. |
+| `NOT_APPLIED` | Coffee Chats stopped before writing anything. Your data is exactly as it was. |
+| `OUTCOME_UNKNOWN` | Coffee Chats cannot prove whether the change was written and will not guess. Open your Coffee Chats page and look before you decide what to do. Do not ask the agent to retry with a new key, because that could apply the change twice. |
+| `SERVICE_UNAVAILABLE` | Coffee Chats could not do the work just now and wrote nothing. Try again later. |
+| `VERSION_CONFLICT` | Your stored preference changed after the agent read it, so nothing was written. Ask the agent to read it again and make the change from what is there now. |

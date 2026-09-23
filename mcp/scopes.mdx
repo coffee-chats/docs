@@ -1,0 +1,38 @@
+---
+title: Permissions
+description: Every permission you can grant to a Coffee Chats MCP connection and the tools that use it.
+---
+
+When an agent asks to connect, Coffee Chats shows you a consent screen listing the permissions it asked for. This page is generated from the same source as that screen, so the wording below is the wording you will read there.
+
+A permission you can grant appears in this table. Nothing else can be asked for.
+
+| Permission | What the consent screen says | Kind | Tools that use it |
+| --- | --- | --- | --- |
+| `billing:read` | Read your subscription, usage, and referral information | read | `billing.credit_history.list`, `billing.limits.get`, `billing.referrals.get`, `billing.subscription.get`, `billing.usage.get` |
+| `booking:read` | Read your booking settings, event types, bookings, and booking conflicts | read | `booking.conflicts.list`, `booking.event_types.get`, `booking.event_types.list`, `booking.event_types.questions.list`, `booking.profile.get`, `booking.records.answers.list`, `booking.records.get`, `booking.records.list`, `booking.settings.get` |
+| `booking:write` | Update the title, description and duration of your booking event types, and archive or restore them, after you approve the change | write | `booking_archive_event_type`, `booking_update_event_type` |
+| `campaigns:read` | Read your campaigns, their selected companies, and outreach templates | read | `campaigns.companies.list`, `campaigns.contact_stats.get`, `campaigns.get`, `campaigns.list`, `campaigns.template.get` |
+| `campaigns:write` | Pause a campaign's sending, and change a campaign's name, description and goal | write | `campaign_pause_sending`, `campaigns.details.update` |
+| `contacts:read` | Read your contacts and network information | read | `contacts.get`, `contacts.list`, `contacts.network.stats.get`, `contacts.notes.get`, `contacts.stats.get`, `contacts.tags.get` |
+| `contacts:write` | Update the notes and tags on your contacts | write | `contacts.notes.update`, `contacts.tags.update` |
+| `integrations:read` | Read your connected calendar sources and their stored connection status | read | `calendars.selected.list`, `calendars.sources.get`, `calendars.sources.list`, `calendars.status.get` |
+| `jobs:read` | Read your internship applications, the referral requests on them, and individual job postings | read | `jobs.applications.get`, `jobs.applications.list`, `jobs.applications.referrals.list`, `jobs.postings.get` |
+| `jobs:write` | Update the stage and priority of your internship applications | write | `jobs.applications.stage.update` |
+| `mail:read` | Read your outreach templates and thank-you drafts | read | `campaigns.template.get`, `meetings.thank_you.get` |
+| `meetings:read` | Read your meetings and meeting details | read | `meetings.get`, `meetings.insights.get`, `meetings.list`, `meetings.notes.get`, `meetings.outcome.get`, `meetings.thank_you.get` |
+| `meetings:transcript:read` | Read meeting transcripts when participant consent allows it | read | `meetings.transcript.list` |
+| `meetings:write` | Update your meeting notes and meeting outcome | write | `meetings.notes.update`, `meetings.outcome.update` |
+| `offline_access` | Stay connected by issuing rotating refresh credentials | refresh | no tool uses it |
+| `profile:read` | Read your Coffee Chats profile and preferences | read | `profile.education.list`, `profile.get`, `profile.job_preferences.get`, `profile.job_search_stage.get` |
+| `profile:write` | Update your profile preferences, and propose booking page changes you approve | write | `actions.cancel`, `booking_update_page_text`, `booking_update_page_visibility`, `booking_update_scheduling_rules`, `profile.job_search_stage.update`, `profile.update` |
+
+## Staying connected
+
+`offline_access` is not a permission to read anything. It lets the agent host keep the connection alive with rotating refresh credentials instead of sending you back through sign-in. No tool requires it, which is why its last column reads "no tool uses it".
+
+## Reading the table
+
+The last column is the honest answer about what a permission buys. It lists the tools that use the permission today, generated from the same catalogue the connector registers. If a consent sentence ever sounds wider than that list, believe the list.
+
+The [tool reference](/mcp/tools/overview) describes what each of those tools returns.

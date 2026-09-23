@@ -1,0 +1,96 @@
+---
+title: Operations, keys and limits
+description: What an operation identifier is, how idempotency keys behave, what a revoke bounds, how to reconcile an uncertain outcome, and the request and byte limits.
+---
+
+Every change an agent makes through Coffee Chats is a stored record with an identifier, and the rules around those records are what make a retry safe. This page collects them: identifiers, idempotency keys, what a revoke bounds, how to settle an uncertain outcome, and the limits on requests and on result size.
+
+## What an operation identifier is
+
+Every result from a write tool carries an `operationId`. It is a 24-character hexadecimal string, and it names the one stored record for that one change. The same value appears in the proposal answer, in the handoff URL of a consequential request, in every poll of that request, and as the `correlationId` inside an error.
+
+It is also the whole input needed to poll. A consequential tool called with nothing but `operationId` returns the current state of that request rather than proposing a new one, and `actions.cancel` takes the same value to withdraw one.
+
+An operation identifier is not a secret. It is also of no use to anyone else, because a request can only be read back through the connection that created it.
+
+## Idempotency keys
+
+The agent chooses the key. It is a string of 16 to 128 characters, and it belongs to one change. Each of the nine safe writes and each of the five consequential tools takes one. `actions.cancel` is the exception, because the identifier it takes already names one request.
+
+Sending the same call twice is safe. If the agent sends the same tool, the same key and the same input again, Coffee Chats returns the result it already computed and writes nothing further. This is the behaviour to rely on when an answer is lost in transit.
+
+Sending the same key with different input is refused. A key that already names a stored change cannot be pointed at a different one. The call fails with `VERSION_CONFLICT` and nothing is written.
+
+A genuinely new change needs a new key. Reusing an old key to force a retry gets the old answer back rather than a new change.
+
+Two different tools never collide. A stored change is made unique by three things together: the connection, the tool name and the idempotency key. The tool name is part of the key in that sense, so the same key sent to two different tools names two different changes, and neither one can ever continue or overwrite the other.
+
+## What a revoke bounds
+
+Revoking a connection stops the credential at once. The next protocol call made with it is refused, and so is any attempt to refresh it.
+
+What it does to work in flight is bounded rather than instantaneous, and this is the part an agent must not get wrong:
+
+- Work that has not yet been given a short window in which it may start is denied outright, and nothing is written.
+- Work that has already been given such a window may still finish. A connection can hold at most four of these windows at once.
+- A window lasts at most thirty seconds, and that is a deadline for starting rather than for finishing. A change that holds a window but does not start within it fails with `ACTION_EXPIRED` and nothing is written. A change that has already started is not stopped.
+
+The agent normally observes none of this, because its credential died at the moment of the revoke. The student can see the result on the page that was being changed, and the [revocation](/mcp/revocation) page tells them so.
+
+## Reconciling an uncertain outcome
+
+An uncertain outcome is Coffee Chats declining to guess. It means the connector cannot prove whether the change was written, so it says so rather than reporting a success or a failure it cannot stand behind.
+
+The way to settle it is to read, and never to write again:
+
+| The write that was uncertain | The read that settles it |
+| --- | --- |
+| `profile.update` | `profile.get`, and look at the email-length preference |
+| `profile.job_search_stage.update` | `profile.job_search_stage.get` |
+| `contacts.notes.update` | `contacts.notes.get` for the same contact |
+| `contacts.tags.update` | `contacts.tags.get` for the same contact |
+| `meetings.notes.update` | `meetings.notes.get` for the same meeting |
+| `meetings.outcome.update` | `meetings.outcome.get` for the same meeting |
+| `campaign_pause_sending` | `campaigns.get`, and look at the sending state |
+| `campaigns.details.update` | `campaigns.get`, and look at the name, description and goal |
+| `jobs.applications.stage.update` | `jobs.applications.get`, and look at the stage and the priority |
+| `booking_update_page_text` | `booking.settings.get`, and look at the headline and welcome message |
+| `booking_update_page_visibility` | `booking.settings.get`, and look at whether the page is public |
+| `booking_update_scheduling_rules` | `booking.settings.get`, and look at the four scheduling rules |
+
+Whatever the read returns is the answer. If it already matches what was asked for, the change landed and there is nothing to do. If it does not, the change can be made again under a new key. Sending the change again under a new key before reading is the one thing that can apply it twice.
+
+`actions.cancel` never returns an uncertain outcome. It answers either that the request is withdrawn or that it was no longer withdrawable, and there is nothing to reconcile.
+
+## Request limits
+
+Two rate limiters sit in front of the connector, and they count different things.
+
+| What it protects | Limit | Counted per |
+| --- | --- | --- |
+| The authorization endpoints, where a host starts a flow or exchanges a token | 60 requests per minute | The calling network address |
+| The protocol endpoint, where the agent calls tools | 120 requests per minute | The connection and the client together |
+
+A refused request is answered with the status `429`, and both limiters send the standard rate-limit headers, including the limit, the remaining count, the reset time and a retry-after value. The protocol limiter answers with this body:
+
+```json
+{ "error": "rate_limited" }
+```
+
+Honour the retry-after value. A polling loop that ignores it will spend the whole budget on one waiting request and lock the agent out of its own reads.
+
+A request body sent to the protocol endpoint is accepted up to 64 kilobytes. No tool input the catalogue defines comes close to that.
+
+## Byte budgets
+
+Every tool declares a maximum result size, and its own page in the [tool reference](/mcp/tools/overview) prints the number. Today the number is either 4,096 or 16,384 bytes. All thirteen write tools have 4,096, and so does `profile.job_search_stage.get`; every other read has 16,384. The budget is measured on the whole result as it goes over the wire, so the wrapping JSON counts as well as the data.
+
+A result that would exceed its budget is not truncated. Tools whose single stored value can grow past the budget return a measured fragment and a cursor instead, and [an ordinary session](/mcp/recipes/workflow) describes how to reassemble one. For any other tool, a result over the budget fails with the same fixed error every read failure uses, which is why the reads are narrow and paged in the first place.
+
+## Related pages
+
+- [An ordinary session](/mcp/recipes/workflow)
+- [Errors and retries](/mcp/recipes/errors)
+- [Changes that need approval](/mcp/recipes/approvals)
+- [Revocation](/mcp/revocation)
+- [Tool reference](/mcp/tools/overview)

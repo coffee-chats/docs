@@ -1,0 +1,58 @@
+---
+title: Compatibility
+description: Which agent hosts are registered with Coffee Chats, what registration means, and what Coffee Chats will check before it calls a host verified.
+---
+
+The Coffee Chats connector is live at `https://mcp.coffeechats.me/mcp`. No agent host has been verified by Coffee Chats against it.
+
+This page says what "registered" and "verified" mean here, which hosts are registered today, and what Coffee Chats will check before it records a host as verified.
+
+## Registered and verified are two different things
+
+Registered means the client identifier and the addresses it may be sent back to after sign-in are on the list the Coffee Chats authorization server accepts. Coffee Chats does not accept new clients automatically, so a host that is not on the list cannot complete the sign-in flow at all.
+
+Verified means Coffee Chats has run the whole flow with that host, at a named version, and written down the result. No such run exists yet, so no row below says verified.
+
+A model name is not evidence either way. The question is whether a host application can complete sign-in, consent, renewal and disconnection against Coffee Chats, and only a run can answer it.
+
+## Hosts
+
+| Host | Client identifier | Status |
+| --- | --- | --- |
+| Claude Code command-line tool | `claude-code` | Registered, not yet verified by Coffee Chats |
+| Claude on the web and Claude Desktop | `claude-ai` | Registered, not yet verified by Coffee Chats |
+| Codex command-line tool | none | Not registered |
+| Cursor command-line tool | none | Not registered |
+| ChatGPT | none | Not registered |
+| Muse Code | none | Not registered |
+
+The Claude Code entry is a native client. It receives its authorization code on a loopback address on your own machine, and the address is matched on scheme, host and path with the port ignored, because the tool picks a free port each time it runs.
+
+The Claude entry for the web and the desktop is a web client. It receives its authorization code at an address on Anthropic's own site.
+
+Both are public clients that use PKCE. PKCE means the host proves, when it exchanges the authorization code, that it is the same program that asked for the code. Neither client holds a shared secret with Coffee Chats, because a program installed on many machines cannot keep one.
+
+## What a verification run will check
+
+A row above changes to verified, with a date and a host version, only after Coffee Chats has run all six of these against the live connector:
+
+1. The connector answers an unauthenticated call with a challenge, and the host finds the authorization server from it.
+2. The host's client identifier and its return address are accepted, including the native loopback behaviour where that applies.
+3. Google sign-in and same-browser email sign-in both complete, approving and denying consent both do what they say, and a failed attempt can be recovered.
+4. A read, a change applied straight away, and a change that needs an approval in the browser all behave as documented, including the errors.
+5. Access expires and is renewed, renewals are serialized, a replayed refresh credential ends the connection, and a disconnected connection is refused.
+6. Coffee Chats app credentials, guest links and browser extension credentials are all refused by the connector.
+
+## Documentation search and the connector are two different things
+
+Mintlify has a documentation search connector for a published documentation site. Connecting an agent to it retrieves published documentation and nothing else. It is not enabled for Coffee Chats, and no search index exists.
+
+The Coffee Chats connector at `https://mcp.coffeechats.me/mcp` is the one that reaches your account. Connecting an agent to documentation search does not authorize it to touch your account. Account access needs its own authorization, with the permissions you approve on the consent page.
+
+No page in this documentation carries account data, because student data is not allowed in it.
+
+## Related pages
+
+- [Quickstart](/mcp/quickstart)
+- [Authentication](/mcp/authentication)
+- [Permissions](/mcp/scopes)

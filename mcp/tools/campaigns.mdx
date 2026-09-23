@@ -1,0 +1,382 @@
+---
+title: Campaign tools
+description: Tools that read your campaigns, the companies they target and their outreach templates, and rewrite one campaign's name, description and goal.
+---
+
+These tools read your campaigns, the companies they target and their outreach templates, and rewrite one campaign's name, description and goal. They need the permissions `campaigns:read`, `campaigns:write` and `mail:read`, which you grant on the consent screen when you connect.
+
+This page is generated from the connector's tool catalogue. It describes 6 tools. Every tool reads or writes only your own account.
+
+## Permissions this page needs
+
+- `campaigns:read`: Read your campaigns, their selected companies, and outreach templates
+- `campaigns:write`: Pause a campaign's sending, and change a campaign's name, description and goal
+- `mail:read`: Read your outreach templates and thank-you drafts
+
+The [permissions page](/mcp/scopes) lists every permission you can grant.
+
+## `campaigns.list`
+
+List the authenticated student's campaigns, including archived campaigns by default; discovery status is the last stored value and may lag.
+
+Permissions: This tool needs `campaigns:read`, which the consent screen describes as "Read your campaigns, their selected companies, and outreach templates".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `limit` | integer | no | from 1 to 20 |
+| `status` | string | no | one of `DRAFT`, `SCHEDULED`, `DISCOVERING`, `ACTIVE`, `PAUSED`, `COMPLETED`, `ARCHIVED` |
+
+### Example call
+
+```json
+{
+  "limit": 10,
+  "status": "ACTIVE"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "campaigns",
+  "nextCursor"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "campaigns",
+  "fragment",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `campaigns.get`
+
+Read one owned campaign directly; discovery status is the last stored value and may lag.
+
+Permissions: This tool needs `campaigns:read`, which the consent screen describes as "Read your campaigns, their selected companies, and outreach templates".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "campaign"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "campaign",
+  "fragment",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `campaigns.companies.list`
+
+List every selected company and its last stored discovery state for one owned campaign.
+
+Permissions: This tool needs `campaigns:read`, which the consent screen describes as "Read your campaigns, their selected companies, and outreach templates".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "companies",
+  "nextCursor"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "companies",
+  "fragment",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `campaigns.template.get`
+
+Read one owned campaign outreach template with campaign and mail-read permission.
+
+Permissions: This tool needs `campaigns:read`, which the consent screen describes as "Read your campaigns, their selected companies, and outreach templates", and `mail:read`, which the consent screen describes as "Read your outreach templates and thank-you drafts".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+| `part` | string | yes | one of `base_message`, `call_to_action` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567",
+  "part": "base_message"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "aiPersonalize",
+  "nextCursor",
+  "part",
+  "subject",
+  "text",
+  "tone"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "fragment",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `campaigns.contact_stats.get`
+
+Count the contacts of one owned campaign by outreach state. The four contact counts are computed at call time and are never stored by this tool, so they are current; the campaign's own discovery status is the last stored value and may lag the web interface. The emails sent figure is the stored counter that email delivery maintains.
+
+Permissions: This tool needs `campaigns:read`, which the consent screen describes as "Read your campaigns, their selected companies, and outreach templates".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+
+A result carries these top-level fields:
+
+```json
+[
+  "campaignId",
+  "contacted",
+  "emailsSent",
+  "meetings",
+  "replied",
+  "totalContacts"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `campaigns.details.update`
+
+What this changes: Rewrite one campaign's name, description and goal.
+
+All three are written together and all three are required, so send the values you want to keep as well as the ones you are changing; read them first with campaigns.get. The name is at most 100 characters and may not be blank, the description and the goal at most 500 each. This changes nothing about who the campaign contacts, what it sends or when it sends it.
+
+Permissions: This tool needs `campaigns:write`, which the consent screen describes as "Pause a campaign's sending, and change a campaign's name, description and goal".
+
+Risk: `safe_write`. This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `campaignId` | string | yes | pattern `^[a-f0-9]{24}$` |
+| `description` | string | yes | at most 500 characters |
+| `goal` | string | yes | at most 500 characters |
+| `idempotencyKey` | string | yes | 16 to 128 characters |
+| `name` | string | yes | at most 100 characters |
+
+### Example call
+
+```json
+{
+  "campaignId": "0123456789abcdef01234567",
+  "description": "Outreach to fintech alumni who graduated in the last five years.",
+  "goal": "Book five coffee chats before the end of the term.",
+  "idempotencyKey": "example-idempotency-key-0011",
+  "name": "Spring fintech outreach"
+}
+```
+
+### Result
+
+A result is never larger than 4,096 bytes.
+
+This tool's result takes one of these 4 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1, where `tag` is `completed`, carries these top-level fields:
+
+```json
+[
+  "operationId",
+  "operationStatus",
+  "result",
+  "scenario",
+  "tag"
+]
+```
+
+Shape 2, where `tag` is `accepted`, carries these top-level fields:
+
+```json
+[
+  "operationId",
+  "operationStatus",
+  "scenario",
+  "tag"
+]
+```
+
+Shape 3, where `status` is `failed`, carries these top-level fields:
+
+```json
+[
+  "error",
+  "operationId",
+  "scenario",
+  "status"
+]
+```
+
+Shape 4, where `status` is `uncertain`, carries these top-level fields:
+
+```json
+[
+  "error",
+  "operationId",
+  "scenario",
+  "status"
+]
+```
+
+### The result may carry a retry hint
+
+A call can be accepted and still ask the agent to come back later. When that happens the result is an accepted result and not a failure, and it carries a hint beside it holding one of these codes and a delay in milliseconds. Nothing has gone wrong and nothing has been written yet.
+
+| Code | What it means |
+| --- | --- |
+| `PERMIT_BACKPRESSURE` | Too much work is already running on this connection. The agent should wait for the stated delay and call the tool again. |
+| `PERMIT_CONTENTION` | Another call was holding the same slot. The agent should wait for the stated delay and call the tool again. |
+
+### Errors
+
+A call that does not succeed carries one of these codes.
+
+| Code | What it means |
+| --- | --- |
+| `ACTION_DENIED` | Coffee Chats would not let this connection make the change, so nothing was written. The connection may have been revoked, or it may no longer hold the permission this tool needs. |
+| `ACTION_EXPIRED` | Coffee Chats did not finish the change inside the short window it allows itself, and stopped rather than write late. Nothing was written. Ask the agent to make the change again. |
+| `NOT_APPLIED` | Coffee Chats stopped before writing anything. Your data is exactly as it was. |
+| `OUTCOME_UNKNOWN` | Coffee Chats cannot prove whether the change was written and will not guess. Open your Coffee Chats page and look before you decide what to do. Do not ask the agent to retry with a new key, because that could apply the change twice. |
+| `SERVICE_UNAVAILABLE` | Coffee Chats could not do the work just now and wrote nothing. Try again later. |
+| `VERSION_CONFLICT` | Your stored preference changed after the agent read it, so nothing was written. Ask the agent to read it again and make the change from what is there now. |

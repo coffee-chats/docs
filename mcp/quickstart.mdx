@@ -1,0 +1,126 @@
+---
+title: Quickstart
+description: Connect an agent to Coffee Chats, sign in, choose what it may do, make a first read and a first write, and end the connection.
+---
+
+Coffee Chats runs a connector that lets a program act on your Coffee Chats account for you. This page walks through one connection from start to finish: adding the connector, signing in, choosing what to share, one read, one write, and how to end the connection again. Reading this page installs nothing and grants nothing.
+
+## The words this documentation uses
+
+An agent is a program that does work for you. It reads and writes through tools instead of through the Coffee Chats screens.
+
+An agent host is the application the agent runs inside, such as a command-line tool or a chat application.
+
+MCP stands for Model Context Protocol. It is the shared language an agent host uses to ask an outside service to run one named action for you. Each named action is called a tool.
+
+A connector is the service end of that protocol. The Coffee Chats connector is at `https://mcp.coffeechats.me/mcp`.
+
+A permission is one named thing you allow a connection to do, such as reading your contacts. You choose the permissions on a page in your own browser. The [permissions page](/mcp/scopes) lists every one of them.
+
+An approval is a decision you make in a browser before one particular change is written. Five tools work this way and no others. The [approvals page](/mcp/approvals) explains them.
+
+## Before you begin
+
+You need a Coffee Chats account that has finished the normal onboarding in the app. You also need an agent host that speaks MCP and can run an OAuth authorization code flow in a browser. OAuth is the standard that lets you give a program limited access to your account without giving it your password.
+
+## 1. Add the connector
+
+Give your agent host this address:
+
+`https://mcp.coffeechats.me/mcp`
+
+Where you paste that address depends on your agent host. In Claude on the web and in Claude Desktop, open Settings, then Connectors, then add a custom connector, paste the address as the server URL, open the advanced settings and paste the client identifier `claude-ai`. Leave the client secret empty. In the Claude Code command-line tool, run `claude mcp add --transport http coffeechats https://mcp.coffeechats.me/mcp --client-id claude-code` and leave the client secret unset. Coffee Chats has not yet run either of those clients through a connection from end to end, so the menu names in your version may differ from the names written here.
+
+The client identifier is not optional. Coffee Chats does not register new clients automatically, so a host that sends no identifier is refused before it reaches a sign-in page.
+
+The connector says which authorization server protects it at `https://mcp.coffeechats.me/.well-known/oauth-protected-resource/mcp`, and that authorization server publishes its own configuration at `https://mcp.coffeechats.me/oauth/mcp/.well-known/openid-configuration`. An agent host that follows the protocol reads both addresses and finds the sign-in flow on its own.
+
+Only two applications are allowed to connect today. One is the Claude Code command-line tool, under the identifier `claude-code`. It is a native client, which means it receives its authorization code on a loopback address on your own machine. The other is Claude on the web, which also covers Claude Desktop, under the identifier `claude-ai`. It is a web client, which means it receives its authorization code at an address on the company's own site. Any other application is refused at sign-in.
+
+Both are registered and neither is verified. Registration means the identifier and the addresses the application may be sent back to are on the list the authorization server accepts. Verification would mean Coffee Chats has run the whole flow with that application and written down the result, and no such run exists yet. Treat your first connection as a trial. The [compatibility page](/mcp/compatibility) is where that record will appear.
+
+Do not paste a session cookie, an application password or any other long-lived secret into an agent host. The connector accepts nothing but OAuth, so a copied secret cannot work, and pasting one puts your whole account at risk.
+
+## 2. Sign in
+
+Your agent host opens a browser window on the Coffee Chats sign-in page. It also runs a security check called PKCE in the background, which stops another program from taking over the sign-in part way through. You do not have to do anything for that check.
+
+You sign in with Google, or with a link that Coffee Chats sends to the email address on your account. Open that link in the browser you started in. Opening it on your phone when you started on a laptop does not finish the flow.
+
+Three clocks run here, and the shortest one is the one to watch. You have ten minutes from the moment your agent host sends you to Coffee Chats to finish signing in and choosing what to share. The email link itself stops working after fifteen minutes, and the whole sign-in attempt after twenty. If any of them runs out, start again from your agent host.
+
+Coffee Chats runs this sign-in page. Your agent host never sees your Google account and never sees the link Coffee Chats emails you. There is no password anywhere in this flow.
+
+## 3. Choose what to share
+
+You then see a page headed "Authorize access". It names the application that is asking, the Coffee Chats account you are signed in with, and every permission it requested, each with the sentence that says what the permission covers. The two buttons are "Approve access" and "Deny access".
+
+The name the application shows is text the application supplied and nobody has checked it, so the page marks it unverified. Read the origin printed under the name instead. For a web application such as Claude on the web, the origin is the web address its sign-in returns to. For a command-line tool such as Claude Code, there is no web address and the origin reads `native://loopback`, which means the sign-in is handed back to a program running on your own machine.
+
+Six of the permissions you can grant let a connection change something, and a seventh lets it stay connected. These are the sentences the page shows for those seven:
+
+- `profile:write`: "Update your profile preferences, and propose booking page changes you approve"
+- `booking:write`: "Update the title, description and duration of your booking event types, and archive or restore them, after you approve the change"
+- `contacts:write`: "Update the notes and tags on your contacts"
+- `meetings:write`: "Update your meeting notes and meeting outcome"
+- `campaigns:write`: "Pause a campaign's sending, and change a campaign's name, description and goal"
+- `jobs:write`: "Update the stage and priority of your internship applications"
+- `offline_access`: "Stay connected by issuing rotating refresh credentials"
+
+That last sentence means the connection can renew itself. Grant it if you want the agent to keep working over days without sending you back to sign-in. Without it, the agent's access stops after ten minutes and you sign in again.
+
+The other permissions you can grant only read. The [permissions page](/mcp/scopes) lists all seventeen with the tools each one unlocks.
+
+There are no per-permission checkboxes on this page. You approve the whole list or you deny it. If the list holds something you do not want, deny it and ask your agent host to request fewer permissions. A tool whose permission you did not grant returns an error to the agent instead of your data.
+
+When you approve, the browser hands an authorization code back to the agent host, and the host trades that code for an access credential. If you granted `offline_access`, it also receives a refresh credential, which is what lets it stay connected without sending you back to the sign-in page.
+
+## 4. Make the first read
+
+The smallest first call is `profile.get`. It takes no input and returns your own profile: your basic fields, a few list counts, your email-length preference and whether you finished onboarding. It reads only your account and it changes nothing.
+
+If that call returns your own data, the connection works. The [profile tools](/mcp/tools/profile) page gives the exact input and result.
+
+## 5. Make the first write
+
+The smallest write is `profile.update`, which sets your email-length preference. Along with the new value it takes an idempotency key.
+
+An idempotency key is a string the agent makes up for one particular change. If the connection drops and the agent sends the same call again with the same key, Coffee Chats returns the answer it already computed instead of applying the change a second time. That is what makes a retry safe. The key is between 16 and 128 characters. An example key looks like `example-idempotency-key-0001`. Any string of that length will do, as long as a genuinely new change gets a new one.
+
+Ten tools write this way, with no approval step. They cover your profile preferences, your job-search stage, the notes and tags on a contact, the notes and outcome on a meeting, a campaign's name, description and goal, an internship application's stage and priority, and the withdrawal of a request you have not decided yet. The tenth stops a campaign from sending more mail. There is no tool that starts a campaign sending again: you do that yourself in the app.
+
+No tool sends an email and no tool spends credits. The [tool reference](/mcp/tools/overview) lists all 59 tools and marks each one as a read, a safe write or a change that needs your approval.
+
+## 6. Know what needs your approval
+
+Five tools cannot change anything on their own. They propose a change to your booking page text, to whether your booking page is public, to your booking scheduling rules, to the title, description and duration of one of your booking event types, or to whether one of your booking event types is archived. An event type is one kind of meeting you offer on your booking page, with its own title, description, duration and address. Each one answers the agent with a request identifier and a link of the form `https://mcp.coffeechats.me/actions/0123456789abcdef01234567`. Nothing is written until you open that link and approve exactly what the page shows. A request waits thirty minutes and then expires.
+
+The [approvals page](/mcp/approvals) explains what the review page shows you and what each outcome means.
+
+## 7. See the connection, and end it
+
+There are two places, and both do the same thing.
+
+The connections page at `https://mcp.coffeechats.me/connections` lists every connection on your account, the permissions each one holds, and the day each one was last used. Each entry has a button labelled "Revoke".
+
+The Coffee Chats app has the same list under Settings, on the Integrations tab, in the section headed "Connected apps". The button there is labelled "Disconnect".
+
+Disconnecting takes effect immediately. The agent's current access credential stops working on its next call, and it cannot be renewed. One change Coffee Chats had already cleared to run may still finish. The [revocation page](/mcp/revocation) says what a disconnect stops and what can still finish.
+
+## About the credentials the agent host holds
+
+An access credential lasts ten minutes. The agent host renews it in the background with the refresh credential, so an ordinary session does not send you back to the sign-in page.
+
+Each refresh credential can be used once. Using it returns a new one and retires the old one, and presenting a retired refresh credential ends the whole connection rather than that one credential.
+
+Your agent host keeps these credentials on the machine where you signed in. Do not copy them to a second machine. Coffee Chats treats a credential used from a second machine as a stolen one being replayed, and it disconnects the agent. To use a second machine, connect again from that machine.
+
+Anything that looks like a credential in this documentation is a placeholder. An access credential appears as `example-access-token-not-a-real-credential`, which is not a credential and will not work anywhere.
+
+## Related pages
+
+- [Authentication](/mcp/authentication)
+- [Permissions](/mcp/scopes)
+- [Approvals](/mcp/approvals)
+- [Revocation](/mcp/revocation)
+- [Compatibility](/mcp/compatibility)

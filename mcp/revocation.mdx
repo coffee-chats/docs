@@ -1,0 +1,56 @@
+---
+title: Revocation
+description: Where to disconnect an agent, what a disconnect stops at once, what can still finish, and how it differs from signing out.
+---
+
+An agent connection can be disconnected on its own. Disconnecting one does not affect your Coffee Chats account, your ordinary sign-in, or any other connection.
+
+## Where you disconnect an agent
+
+There are two places, and both do exactly the same thing.
+
+The connections page in your browser, at `https://mcp.coffeechats.me/connections`. The button on each entry there is labelled "Revoke".
+
+The Coffee Chats app, under Settings, on the Integrations tab, in the section headed "Connected apps". The button there is labelled "Disconnect".
+
+Whichever one you use, Coffee Chats works out the account from the session you are already signed in with. You never name an account, and no agent can name one for you.
+
+## What the list shows
+
+Each entry shows the application that asked, the origin it was registered with, and the permissions it holds. The name comes from the application and nobody has checked it, so read the origin. For a web application the origin is a web address. For a command-line tool there is no web address, and the origin reads `native://loopback`.
+
+An entry that has been used shows the day it was last used, as a date rather than a time. Coffee Chats records that day at most once an hour, so the date tells you whether an agent is still working and not how many calls it made.
+
+## Signing out of the app is not the same thing
+
+Signing out of the Coffee Chats web or mobile app ends your own browser session and invalidates your own sign-in credential. It reads nothing about your agent connections and disconnects none of them.
+
+If you want an agent to stop, disconnect it. Signing out will not do it.
+
+## What a disconnect does
+
+The moment a disconnect succeeds, Coffee Chats marks that connection disconnected. The agent's current access credential stops working, and it cannot get a new one.
+
+The next call the agent makes on that connection is refused, and so is any attempt to renew the credential. The one exception is a change Coffee Chats had already cleared to run, described below. A disconnected connection cannot be resumed. Starting again means going through authorization and consent from the beginning.
+
+## What can still finish
+
+A disconnect also stops any change Coffee Chats has not already cleared to run. A connection can have at most four changes cleared to run at once. Each of those has thirty seconds to start, and a change that is already running is not stopped. Thirty seconds is a deadline for starting, not a promise that the change has finished or been stopped.
+
+So a change that was already under way either landed or it did not. The connections list will not tell you which. Look at the thing that was being changed, such as your booking page or the setting itself, and see what it says now.
+
+## Things that behave the way you might not expect
+
+Disconnecting a connection twice is not an error. The second disconnect returns the connection exactly as it is and changes nothing.
+
+If somebody guesses a connection identifier, Coffee Chats answers the same way for an unknown identifier, a malformed identifier and somebody else's identifier, so the answer does not reveal which identifiers are real.
+
+## Deleting your account
+
+Deleting your Coffee Chats account disconnects every live agent connection on it. Your record is scrubbed first, and every write an agent could still have in flight checks that record before it commits, so nothing an agent started can land afterwards.
+
+## Related pages
+
+- [Approvals](/mcp/approvals)
+- [Authentication](/mcp/authentication)
+- [Quickstart](/mcp/quickstart)

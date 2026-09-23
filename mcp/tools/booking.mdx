@@ -1,0 +1,441 @@
+---
+title: Booking tools
+description: Tools that read your booking page, your event types, your bookings and your booking conflicts.
+---
+
+These tools read your booking page, your event types, your bookings and your booking conflicts. They need the permission `booking:read`, which you grant on the consent screen when you connect.
+
+This page is generated from the connector's tool catalogue. It describes 9 tools. Every tool reads or writes only your own account.
+
+## Permissions this page needs
+
+- `booking:read`: Read your booking settings, event types, bookings, and booking conflicts
+
+The [permissions page](/mcp/scopes) lists every permission you can grant.
+
+## `booking.profile.get`
+
+Read the authenticated host's booking username, display name, public profile settings, and publication state.
+
+Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+This tool takes no input.
+
+### Example call
+
+```json
+{}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+
+A result carries these top-level fields:
+
+```json
+[
+  "displayName",
+  "headline",
+  "headlineSource",
+  "isPublic",
+  "showLinkedIn",
+  "showResume",
+  "username",
+  "welcomeMessage"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `booking.settings.get`
+
+Read the authenticated student's own private booking settings: handle, publication state, booking page text, meeting location, scheduling rules, intake questions and cancellation policy.
+
+Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 256 characters; pattern `^[A-Za-z0-9_-]+$` |
+
+### Example call
+
+```json
+{}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "allowCancel",
+  "allowReschedule",
+  "bufferAfter",
+  "bufferBefore",
+  "calendarDescription",
+  "cancelDeadline",
+  "confirmationMessage",
+  "customBookingUrl",
+  "customLocationDetails",
+  "defaultLocation",
+  "displayName",
+  "headline",
+  "headlineSource",
+  "intakeQuestions",
+  "isPublic",
+  "maxPerDay",
+  "minimumNotice",
+  "rollingDays",
+  "showLinkedIn",
+  "showResume",
+  "useCustomUrl",
+  "username",
+  "welcomeMessage",
+  "zoomLink"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "fragment",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `booking.event_types.list`
+
+List the authenticated host's event types with bounded pagination and an opaque cursor.
+
+Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 256 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `limit` | integer | no | from 1 to 20 |
+
+### Example call
+
+```json
+{
+  "limit": 10
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+
+A result carries these top-level fields:
+
+```json
+[
+  "eventTypes",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `booking.event_types.get`
+
+Read one authenticated host event type by id with owner-checked lookup.
+
+Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+
+A result carries these top-level fields:
+
+```json
+[
+  "eventType"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `booking.event_types.questions.list`
+
+List one authenticated host event type's questions in stable stored order.
+
+Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 256 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+
+A result carries these top-level fields:
+
+```json
+[
+  "nextCursor",
+  "questions"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `booking.records.list`
+
+List the authenticated host's bookings, including canceled records, with bounded pagination.
+
+Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `limit` | integer | no | from 1 to 20 |
+| `status` | string | no | one of `PENDING`, `CONFIRMED`, `CANCELED`, `RESCHEDULED`, `NO_SHOW`, `COMPLETED` |
+
+### Example call
+
+```json
+{
+  "limit": 10,
+  "status": "CONFIRMED"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "bookings",
+  "nextCursor"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "bookings",
+  "fragment",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `booking.records.get`
+
+Read one booking owned by the authenticated host without guest tokens or provider identifiers.
+
+Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "booking"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "booking",
+  "fragment",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `booking.records.answers.list`
+
+List one owned booking's intake answers in stable stored order with bounded pagination.
+
+Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+
+A result carries these top-level fields:
+
+```json
+[
+  "answers",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `booking.conflicts.list`
+
+List unresolved future booking conflicts for the authenticated host; detectedAt is the background check time.
+
+Permissions: This tool needs `booking:read`, which the consent screen describes as "Read your booking settings, event types, bookings, and booking conflicts".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+
+### Example call
+
+```json
+{}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "conflicts",
+  "nextCursor"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "conflicts",
+  "fragment",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.

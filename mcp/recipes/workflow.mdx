@@ -1,0 +1,400 @@
+---
+title: An ordinary session
+description: The sequence an agent runs against Coffee Chats, from discovery through a first read to a safe write and its replay.
+---
+
+This page is for the person writing the agent. It walks the whole of one ordinary session in the order the calls happen: find the server, authorize once, read something small, page through anything large, make one change safely, and keep the connection alive. Every step here is something the connector does today.
+
+## 1. Discovery
+
+The agent needs only the server address. It asks the server which authorization server protects it, at the standard discovery address `/.well-known/oauth-protected-resource/mcp`, and the answer names that authorization server. It then reads the authorization server's own configuration document at `/oauth/mcp/.well-known/openid-configuration`. Both answers are public and neither needs a credential.
+
+You do not configure an authorization server by hand. A host that follows the protocol finds it from these two documents.
+
+## 2. Authorize once, then list the tools
+
+Authorization is an ordinary authorization code flow with PKCE, run in a browser, and the [quickstart](/mcp/quickstart) describes what the student sees. When it finishes, the host holds a short-lived access token and, if `offline_access` was granted, a refresh token.
+
+The agent then lists tools and receives the whole catalogue. Every tool carries its risk class as protocol metadata under the key `coffeechats/risk`, with the value `read`, `safe_write` or `consequential`, so the agent can tell a read from a write before it calls anything. The [tool reference](/mcp/tools/overview) is generated from that same catalogue.
+
+## 3. The first read
+
+`profile.get` is the smallest honest first call. It takes no input and returns the authenticated student's own profile. If it returns that student's data, the connection is working end to end.
+
+A tool whose permission the student did not grant does not return data. It returns an error result, and that result says nothing about what it would have returned. Ask for the permissions you need at consent time rather than probing for them.
+
+## 4. Paging: cursors and fragments
+
+Two different mechanisms share the word "page", and an agent has to handle both.
+
+A list is paged with a cursor. A list tool takes an optional `cursor` and returns `nextCursor` beside its items. Send the value back unchanged on the next call to continue, and stop when `nextCursor` is null. The cursor is opaque. The only correct thing to do with it is to send it back unchanged, and the one rule worth checking is its length, which each tool's own page in the reference states as a bound of either 256 or 512 characters.
+
+One large value is split into fragments. Some tools read a single stored value that can be larger than the tool's result budget. Rather than truncate it, the tool returns a measured fragment. Here is the first of two answers from `contacts.notes.get` on one note. A real call cuts each chunk at the tool's byte budget, so the chunks below are short enough to fit on this page instead:
+
+```json
+{
+  "fragment": {
+    "id": "0123456789abcdef01234567",
+    "jsonChunk": "\"Met at the spring fintech mixer. Follow u",
+    "offset": 0,
+    "complete": false
+  },
+  "nextCursor": "eyJpZCI6IjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2NyIsIm9mZnNldCI6NDJ9"
+}
+```
+
+The `id` names the value being fragmented, `offset` says where this chunk starts in it, and `complete` says whether this is the last one. The cursor is the same identifier and the next offset, encoded. To reassemble, keep calling the same tool with `nextCursor` and concatenate every `jsonChunk` in the order received. The last answer sets `complete` to true and `nextCursor` to null:
+
+```json
+{
+  "fragment": {
+    "id": "0123456789abcdef01234567",
+    "jsonChunk": "p in April about the referral.\"",
+    "offset": 42,
+    "complete": true
+  },
+  "nextCursor": null
+}
+```
+
+The concatenation of every `jsonChunk` is the whole document, and only then do you parse it as JSON. A note short enough to fit comes back in one answer of this second shape, with `offset` at zero.
+
+Never parse a chunk on its own. A chunk is cut at a safe character boundary rather than at a syntactic one, so a single chunk is usually not valid JSON. The two chunks above are pieces of a JSON string: the first carries that string's opening quotation mark and the second its closing one. A tool's own page in the reference says whether it can return a fragment at all.
+
+## 5. The anatomy of a safe write
+
+A safe write applies as soon as the agent calls it. There is no approval step, because each one changes a small part of the student's own account and the student can change it back in the application. Ten tools carry the `safe_write` risk class. Nine of them change a stored value, and they all behave the same way, so this section works one of them through in full and section 6 gives the other eight. The tenth is `actions.cancel`, which withdraws a proposal rather than changing a stored value, and section 7 covers it.
+
+Each of the nine takes an `idempotencyKey` of 16 to 128 characters that the agent chooses. The key is how Coffee Chats recognises a repeat of a call it has already seen.
+
+### The request
+
+`contacts.notes.update` replaces the private note on one of the student's own contacts:
+
+```json
+{
+  "contactId": "0123456789abcdef01234567",
+  "idempotencyKey": "example-idempotency-key-0006",
+  "notes": "Met at the spring fintech mixer. Follow up in April about the referral."
+}
+```
+
+### The completed result
+
+```json
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Contact notes updated", "itemCount": 1 }
+}
+```
+
+The `result` object is a summary and a count. The written value is never sent back, so read the value with the matching read tool if you need to show the student what is stored.
+
+### The same-key replay
+
+Send the identical call again, the same tool, the same key and the same input, and the answer is the same completed result. Nothing is written a second time:
+
+```json
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Contact notes updated", "itemCount": 1 }
+}
+```
+
+This is what makes a retry safe after a lost answer.
+
+### The different-input conflict
+
+Send the same key with different input, here a different note on the same contact, and the call is refused. Nothing is written and the stored note is untouched:
+
+```json
+{
+  "status": "failed",
+  "scenario": "conflict",
+  "operationId": "0123456789abcdef01234567",
+  "error": {
+    "code": "VERSION_CONFLICT",
+    "retryable": false,
+    "correlationId": "0123456789abcdef01234567"
+  }
+}
+```
+
+A key names one change. Give a genuinely new change a new key.
+
+### The retry hint
+
+A safe write can be accepted and still ask you to come back. The answer is an accepted result with a hint beside it, and nothing has failed:
+
+```json
+{
+  "structuredContent": {
+    "tag": "accepted",
+    "scenario": "loading",
+    "operationId": "0123456789abcdef01234567",
+    "operationStatus": "processing"
+  },
+  "_meta": {
+    "coffeechats/retry": {
+      "code": "PERMIT_BACKPRESSURE",
+      "retryable": true,
+      "retryAfterMs": 1000
+    }
+  }
+}
+```
+
+Wait for `retryAfterMs` milliseconds and call the tool again with the same idempotency key. The [errors](/mcp/recipes/errors) page lists the two codes a hint can carry.
+
+## 6. The other eight safe writes
+
+Each one below shows its request and the completed result it returns. The replay, the conflict and the retry hint are the shapes in section 5, and they are the same on every safe write.
+
+### `profile.update`
+
+Sets the student's email-length preference.
+
+```json
+{
+  "emailLength": "short",
+  "idempotencyKey": "example-idempotency-key-0001"
+}
+```
+
+```json
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Email length preference updated", "itemCount": 1 }
+}
+```
+
+### `profile.job_search_stage.update`
+
+Sets the job-search stage, the experience level and the recruiting timeline together.
+
+```json
+{
+  "experienceLevel": "college_junior",
+  "idempotencyKey": "example-idempotency-key-0004",
+  "recruitingTimeline": "this_term",
+  "seekingStage": "internship"
+}
+```
+
+```json
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Job-search stage updated", "itemCount": 1 }
+}
+```
+
+### `contacts.tags.update`
+
+Replaces the whole tag list on one contact, at most 10 tags of 60 characters each. The list is replaced rather than merged, so send every tag you want to keep.
+
+```json
+{
+  "contactId": "0123456789abcdef01234567",
+  "idempotencyKey": "example-idempotency-key-0007",
+  "tags": ["fintech", "warm"]
+}
+```
+
+```json
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Contact tags updated", "itemCount": 1 }
+}
+```
+
+### `meetings.notes.update`
+
+Replaces the private preparation notes on one meeting, at most 10,000 characters. This is the meeting's own notes field and not the note the outcome form captures. A practice session is not writable.
+
+```json
+{
+  "idempotencyKey": "example-idempotency-key-0008",
+  "meetingId": "0123456789abcdef01234567",
+  "notes": "Ask about the summer internship pipeline and how referrals are submitted."
+}
+```
+
+```json
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Meeting notes updated", "itemCount": 1 }
+}
+```
+
+### `meetings.outcome.update`
+
+Records the star rating from 1 to 5, the referral outcome, up to 10 key takeaways and the outcome notes, all together. It does not mark a thank-you as sent, it does not schedule a follow-up and it does not move the linked contact. The student does those in the application.
+
+```json
+{
+  "idempotencyKey": "example-idempotency-key-0009",
+  "keyTakeaways": ["They offered to refer me in April."],
+  "meetingId": "0123456789abcdef01234567",
+  "outcomeNotes": "A warm conversation that ended with a clear next step.",
+  "rating": 5,
+  "referralOutcome": "GOT_REFERRAL"
+}
+```
+
+```json
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Meeting outcome updated", "itemCount": 1 }
+}
+```
+
+### `campaign_pause_sending`
+
+Stops a campaign from sending more mail. Read the bounds on the [campaign pause tool](/mcp/tools/campaign-pause-sending) page before you promise a student anything: it is a hold rather than a withdrawal, mail a send-now batch has already queued is still dispatched, and nothing already sent can be recalled. There is no tool that resumes sending, so the student does that in the application.
+
+```json
+{
+  "campaignId": "0123456789abcdef01234567",
+  "idempotencyKey": "example-idempotency-key-0010"
+}
+```
+
+```json
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Campaign sending paused", "itemCount": 1 }
+}
+```
+
+### `campaigns.details.update`
+
+Rewrites one campaign's name, description and goal. All three are written together and all three are required, so read them with `campaigns.get` first and send back the values you are keeping. The name is at most 100 characters and may not be blank, the description and the goal at most 500 each. Nothing about who the campaign contacts, what it sends or when it sends changes.
+
+```json
+{
+  "campaignId": "0123456789abcdef01234567",
+  "description": "Outreach to fintech alumni who graduated in the last five years.",
+  "goal": "Book five coffee chats before the end of the term.",
+  "idempotencyKey": "example-idempotency-key-0011",
+  "name": "Spring fintech outreach"
+}
+```
+
+```json
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Campaign details updated", "itemCount": 1 }
+}
+```
+
+### `jobs.applications.stage.update`
+
+Moves one internship application to a stage and a priority. Both are written together and both are required, so read them with `jobs.applications.get` first. The [jobs tools](/mcp/tools/jobs) page lists the eight stages and the three priorities, and neither field can be cleared. Moving off the saved stage for the first time records the applied date, exactly as the application does.
+
+```json
+{
+  "applicationId": "0123456789abcdef01234567",
+  "idempotencyKey": "example-idempotency-key-0012",
+  "priority": "HIGH",
+  "stage": "APPLIED"
+}
+```
+
+```json
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Application stage updated", "itemCount": 1 }
+}
+```
+
+## 7. Withdrawing a proposal
+
+Five tools do not write on their own. They propose a change to the student's booking page, to the student's booking scheduling rules, or to one of the event types on that page, and they wait for the student to approve it in a browser. [Changes that need approval](/mcp/recipes/approvals) is the recipe for them.
+
+`actions.cancel` withdraws one of those proposals while the student has still not decided and no work has started. It is a safe write like the others, but it takes no idempotency key, because the identifier of the request it withdraws already names one thing.
+
+```json
+{
+  "operationId": "0123456789abcdef01234567"
+}
+```
+
+A withdrawal that succeeds, and a repeat of one that already succeeded, both answer with a cancelled result:
+
+```json
+{
+  "status": "cancelled",
+  "scenario": "cancelled",
+  "operationId": "0123456789abcdef01234567",
+  "error": {
+    "code": "OPERATION_CANCELLED",
+    "retryable": false,
+    "correlationId": "0123456789abcdef01234567"
+  }
+}
+```
+
+A request that is no longer withdrawable, because the student decided it, because it expired, or because Coffee Chats has already started applying it, answers with a conflict. Nothing about the request changes:
+
+```json
+{
+  "status": "failed",
+  "scenario": "conflict",
+  "operationId": "0123456789abcdef01234567",
+  "error": {
+    "code": "VERSION_CONFLICT",
+    "retryable": false,
+    "correlationId": "0123456789abcdef01234567"
+  }
+}
+```
+
+An agent can withdraw only a request its own connection created. An identifier that names nothing this connection proposed is refused with the fixed error text every read failure uses, and that answer says nothing about whether such a request exists.
+
+## 8. Refresh in the background
+
+An access token is short-lived. The host exchanges the refresh token for a new access token without sending the student back through sign-in, so a long-running session does not interrupt them.
+
+Each refresh token can be used once. Using it returns a new one and retires the old one, and presenting a retired one ends the whole connection. Run one host per connection, and never copy a refresh token to a second machine.
+
+## 9. Knowing when to stop
+
+When the student revokes the connection, the agent's next protocol call is refused and so is any attempt to refresh. That is the signal to stop and, if the student still wants the work done, to ask them to authorize again from the beginning. The [revocation](/mcp/revocation) page describes what a revoke stops and what it does not.
+
+## Related pages
+
+- [Errors and retries](/mcp/recipes/errors)
+- [Changes that need approval](/mcp/recipes/approvals)
+- [Operations, keys and limits](/mcp/recipes/operations)
+- [Tool reference](/mcp/tools/overview)
+- [Permissions](/mcp/scopes)

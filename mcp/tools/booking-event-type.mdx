@@ -1,0 +1,160 @@
+---
+title: Booking event type tool
+description: The one tool that proposes a new title, description and duration for one of your booking event types and waits for you to approve it in a browser.
+---
+
+This tool proposes a new title, description and duration for one of your booking event types and waits for you to approve it in a browser. It needs the permission `booking:write`, which you grant on the consent screen when you connect.
+
+This page is generated from the connector's tool catalogue. It describes 1 tool. Every tool reads or writes only your own account.
+
+## Permissions this page needs
+
+- `booking:write`: Update the title, description and duration of your booking event types, and archive or restore them, after you approve the change
+
+The [permissions page](/mcp/scopes) lists every permission you can grant.
+
+## `booking_update_event_type`
+
+What this changes: Propose a new title, description and duration for one of the authenticated student's booking event types, which take effect only after the student approves the change in a browser.
+
+Permissions: This tool needs `booking:write`, which the consent screen describes as "Update the title, description and duration of your booking event types, and archive or restore them, after you approve the change".
+
+Risk: `consequential`. This tool cannot change anything on its own. It proposes the change, and nothing happens until you open the Coffee Chats page it points to and approve exactly what is shown.
+
+### Input
+
+The agent sends exactly one of these shapes and never a mixture of them. Each shape refuses any property it does not name.
+
+#### Shape 1, sending `description`, `duration`, `eventTypeId`, `idempotencyKey`, `title`
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `description` | string | yes | 0 to 500 characters |
+| `duration` | integer | yes | from 5 to 480 |
+| `eventTypeId` | string | yes | pattern `^[a-f0-9]{24}$` |
+| `idempotencyKey` | string | yes | 16 to 128 characters |
+| `title` | string | yes | 1 to 100 characters |
+
+##### Example call
+
+```json
+{
+  "description": "Bring one question about internships.",
+  "duration": 45,
+  "eventTypeId": "0123456789abcdef01234567",
+  "idempotencyKey": "example-idempotency-key-0008",
+  "title": "Career questions"
+}
+```
+
+#### Shape 2, sending `operationId`
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `operationId` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+##### Example call
+
+```json
+{
+  "operationId": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 4,096 bytes.
+
+This tool's result takes one of these 6 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1, where `tag` is `completed`, carries these top-level fields:
+
+```json
+[
+  "operationId",
+  "operationStatus",
+  "result",
+  "scenario",
+  "tag"
+]
+```
+
+Shape 2, where `tag` is `requires_confirmation`, carries these top-level fields:
+
+```json
+[
+  "actionId",
+  "actionStatus",
+  "handoff",
+  "operationId",
+  "scenario",
+  "tag"
+]
+```
+
+Shape 3, where `tag` is `accepted`, carries these top-level fields:
+
+```json
+[
+  "operationId",
+  "operationStatus",
+  "scenario",
+  "tag"
+]
+```
+
+Shape 4, where `status` is `failed`, carries these top-level fields:
+
+```json
+[
+  "error",
+  "operationId",
+  "scenario",
+  "status"
+]
+```
+
+Shape 5, where `status` is `cancelled`, carries these top-level fields:
+
+```json
+[
+  "error",
+  "operationId",
+  "scenario",
+  "status"
+]
+```
+
+Shape 6, where `status` is `uncertain`, carries these top-level fields:
+
+```json
+[
+  "error",
+  "operationId",
+  "scenario",
+  "status"
+]
+```
+
+### The result may carry a retry hint
+
+A call can be accepted and still ask the agent to come back later. When that happens the result is an accepted result and not a failure, and it carries a hint beside it holding one of these codes and a delay in milliseconds. Nothing has gone wrong and nothing has been written yet.
+
+| Code | What it means |
+| --- | --- |
+| `PERMIT_BACKPRESSURE` | Too much work is already running on this connection. The agent should wait for the stated delay and call the tool again. |
+| `PERMIT_CONTENTION` | Another call was holding the same slot. The agent should wait for the stated delay and call the tool again. |
+
+### Errors
+
+A call that does not succeed carries one of these codes.
+
+| Code | What it means |
+| --- | --- |
+| `ACTION_DENIED` | Either you declined this request, or the connection was no longer allowed to make the change when Coffee Chats came to apply it. Nothing was written. |
+| `ACTION_EXPIRED` | The request ran out of time, either before you decided or before Coffee Chats could apply it. Nothing was written. |
+| `NOT_APPLIED` | Coffee Chats stopped before writing anything. Your data is exactly as it was. |
+| `OPERATION_CANCELLED` | The connection was revoked before the change started, so nothing was written. |
+| `OUTCOME_UNKNOWN` | Coffee Chats cannot prove whether the change was written and will not guess. Open your Coffee Chats page and look before you decide what to do. Do not ask the agent to retry with a new key, because that could apply the change twice. |
+| `SERVICE_UNAVAILABLE` | Coffee Chats could not do the work just now and wrote nothing. Try again later. |
+| `VERSION_CONFLICT` | The page changed after the agent read it, so nothing was written. Ask the agent to read the page again and propose the change from what is there now. |

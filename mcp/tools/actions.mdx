@@ -1,0 +1,73 @@
+---
+title: Action withdrawal tool
+description: The one tool that withdraws a change the agent proposed while you have not decided on it yet.
+---
+
+This tool withdraws a change the agent proposed while you have not decided on it yet. It needs the permission `profile:write`, which you grant on the consent screen when you connect.
+
+This page is generated from the connector's tool catalogue. It describes 1 tool. Every tool reads or writes only your own account.
+
+## Permissions this page needs
+
+- `profile:write`: Update your profile preferences, and propose booking page changes you approve
+
+The [permissions page](/mcp/scopes) lists every permission you can grant.
+
+## `actions.cancel`
+
+What this changes: Withdraw an action this client proposed for the authenticated student, while it is still waiting for the student's decision and no execution has started.
+
+Permissions: This tool needs `profile:write`, which the consent screen describes as "Update your profile preferences, and propose booking page changes you approve".
+
+Risk: `safe_write`. This tool withdraws a request the agent proposed and changes no setting of yours. It does not ask you to approve first, because a withdrawal writes nothing to your account and can only happen while you have not decided.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `operationId` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "operationId": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 4,096 bytes.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1, where `status` is `failed`, carries these top-level fields:
+
+```json
+[
+  "error",
+  "operationId",
+  "scenario",
+  "status"
+]
+```
+
+Shape 2, where `status` is `cancelled`, carries these top-level fields:
+
+```json
+[
+  "error",
+  "operationId",
+  "scenario",
+  "status"
+]
+```
+
+### Outcomes
+
+A call carries one of these two codes, and `OPERATION_CANCELLED` is the success.
+
+| Code | What it means |
+| --- | --- |
+| `OPERATION_CANCELLED` | The request is withdrawn and nothing was written. A request this tool finds already withdrawn returns the same code, so withdrawing twice is the same success. |
+| `VERSION_CONFLICT` | The request could no longer be withdrawn, so nothing was withdrawn and nothing was written. You had already decided it, or it had expired, or Coffee Chats had already started applying it. |

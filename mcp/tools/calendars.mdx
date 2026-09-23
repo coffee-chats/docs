@@ -1,0 +1,192 @@
+---
+title: Calendar tools
+description: Tools that read the stored state of your connected calendars.
+---
+
+These tools read the stored state of your connected calendars. They need the permission `integrations:read`, which you grant on the consent screen when you connect.
+
+This page is generated from the connector's tool catalogue. It describes 4 tools. Every tool reads or writes only your own account.
+
+## Permissions this page needs
+
+- `integrations:read`: Read your connected calendar sources and their stored connection status
+
+The [permissions page](/mcp/scopes) lists every permission you can grant.
+
+## `calendars.sources.list`
+
+List the authenticated student's stored calendar sources with measured pagination.
+
+Permissions: This tool needs `integrations:read`, which the consent screen describes as "Read your connected calendar sources and their stored connection status".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `limit` | integer | no | from 1 to 20 |
+
+### Example call
+
+```json
+{
+  "limit": 10
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+
+A result carries these top-level fields:
+
+```json
+[
+  "nextCursor",
+  "sources"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `calendars.sources.get`
+
+Read one authenticated student calendar source without credentials, feed URLs, provider messages, or provider calendar identifiers.
+
+Permissions: This tool needs `integrations:read`, which the consent screen describes as "Read your connected calendar sources and their stored connection status".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+| `id` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example call
+
+```json
+{
+  "id": "0123456789abcdef01234567"
+}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "source"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "fragment",
+  "nextCursor",
+  "source"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `calendars.status.get`
+
+Read stored calendar connection status without contacting a provider. A grant that the student revoked at Google will still read as connected here until some other part of the application notices.
+
+Permissions: This tool needs `integrations:read`, which the consent screen describes as "Read your connected calendar sources and their stored connection status".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+This tool takes no input.
+
+### Example call
+
+```json
+{}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+
+A result carries these top-level fields:
+
+```json
+[
+  "primary",
+  "sources",
+  "sourcesTruncated"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.
+
+## `calendars.selected.list`
+
+List the authenticated student's stored primary-calendar selection flags in stable stored order.
+
+Permissions: This tool needs `integrations:read`, which the consent screen describes as "Read your connected calendar sources and their stored connection status".
+
+Risk: `read`. This tool only reads your own data. It never changes anything and it never asks for your approval.
+
+### Input
+
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `cursor` | string | no | 1 to 512 characters; pattern `^[A-Za-z0-9_-]+$` |
+
+### Example call
+
+```json
+{}
+```
+
+### Result
+
+A result is never larger than 16,384 bytes.
+If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
+
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+
+Shape 1 carries these top-level fields:
+
+```json
+[
+  "calendars",
+  "nextCursor"
+]
+```
+
+Shape 2 carries these top-level fields:
+
+```json
+[
+  "calendars",
+  "fragment",
+  "nextCursor"
+]
+```
+
+### Errors
+
+A failed call returns one protocol error whose text is exactly `Tool call failed.` There is no error code, because every read failure is reported the same way.

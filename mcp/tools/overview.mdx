@@ -1,0 +1,58 @@
+---
+title: Tool reference
+description: Every Coffee Chats MCP tool, the permission it needs and the risk it carries.
+---
+
+The connector answers at `https://mcp.coffeechats.me/mcp` and publishes these 59 tools. This page is generated from the connector's tool catalogue, so it cannot describe a tool the connector does not have.
+
+## Tool families
+
+| Family | Tools | Permissions | Page |
+| --- | --- | --- | --- |
+| Profile tools | 6 | `profile:read`, `profile:write` | [Profile tools](/mcp/tools/profile) |
+| Booking tools | 9 | `booking:read` | [Booking tools](/mcp/tools/booking) |
+| Contact tools | 8 | `contacts:read`, `contacts:write` | [Contact tools](/mcp/tools/contacts) |
+| Meeting tools | 9 | `mail:read`, `meetings:read`, `meetings:transcript:read`, `meetings:write` | [Meeting tools](/mcp/tools/meetings) |
+| Calendar tools | 4 | `integrations:read` | [Calendar tools](/mcp/tools/calendars) |
+| Campaign tools | 6 | `campaigns:read`, `campaigns:write`, `mail:read` | [Campaign tools](/mcp/tools/campaigns) |
+| Job tools | 5 | `jobs:read`, `jobs:write` | [Job tools](/mcp/tools/jobs) |
+| Billing tools | 5 | `billing:read` | [Billing tools](/mcp/tools/billing) |
+| Booking page text tool | 1 | `profile:write` | [Booking page text tool](/mcp/tools/booking-page-text) |
+| Booking page visibility tool | 1 | `profile:write` | [Booking page visibility tool](/mcp/tools/booking-page-visibility) |
+| Booking scheduling rules tool | 1 | `profile:write` | [Booking scheduling rules tool](/mcp/tools/booking-scheduling-rules) |
+| Booking event type tool | 1 | `booking:write` | [Booking event type tool](/mcp/tools/booking-event-type) |
+| Booking event type archive tool | 1 | `booking:write` | [Booking event type archive tool](/mcp/tools/booking-archive-event-type) |
+| Campaign pause tool | 1 | `campaigns:write` | [Campaign pause tool](/mcp/tools/campaign-pause-sending) |
+| Action withdrawal tool | 1 | `profile:write` | [Action withdrawal tool](/mcp/tools/actions) |
+
+## How risky a tool is
+
+- `read`: This tool only reads your own data. It never changes anything and it never asks for your approval.
+- `safe_write`: This tool changes one of your own settings as soon as the agent calls it. It does not ask you to approve first, because the change affects only your own account and you can set it back yourself.
+- `consequential`: This tool cannot change anything on its own. It proposes the change, and nothing happens until you open the Coffee Chats page it points to and approve exactly what is shown.
+
+## Rules every tool follows
+
+- A tool reads only the account that authorized the connection. It cannot reach another student's data.
+- A tool returns a bounded amount of text. Where a stored value can be too large to fit, the tool returns a measured fragment and a cursor, and the agent asks for the next fragment until there is none left. A tool's own page says whether it can do this at all.
+- A read tool that fails returns one fixed message with no code. It never explains why, because the reason could describe data you did not authorize.
+- A tool that changes something either changes one of your own settings straight away, or proposes the change and waits for you to approve it in a browser.
+
+## Endpoints that are deliberately not tools
+
+These parts of Coffee Chats are reachable in the application and are deliberately not published as tools. Each name below is checked against the tool catalogue by name, and the connector registers no tool that answers to it.
+
+- `billing.overage_settings.get`
+- `booking.conflicts.dismiss`
+- `booking.stats.get`
+- `calendars.events.list`
+- `campaigns.activity.list`
+- `campaigns.credits.estimate`
+- `campaigns.stats.get`
+- `campaigns.template.preview`
+- `contacts.match_or_create`
+- `contacts.photos.bulk`
+- `jobs.feed.list`
+- `jobs.url.resolve`
+
+Asking an agent for one of these by name does nothing. The connector has no such tool.

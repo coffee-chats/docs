@@ -1,72 +1,59 @@
 {
   "$schema": "https://mintlify.com/docs.json",
+  "name": "Coffee Chats MCP",
   "theme": "mint",
-  "name": "Mintlify Starter Kit",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#5C4033"
   },
-  "favicon": "/favicon.svg",
   "navigation": {
-    "pages": [
+    "groups": [
       {
-        "group": "Getting Started",
+        "group": "Get started",
         "pages": [
           "index",
-          "quickstart"
+          "mcp/quickstart",
+          "mcp/authentication",
+          "mcp/approvals",
+          "mcp/compatibility",
+          "mcp/revocation"
+        ]
+      },
+      {
+        "group": "Recipes",
+        "pages": [
+          "mcp/recipes/workflow",
+          "mcp/recipes/errors",
+          "mcp/recipes/approvals",
+          "mcp/recipes/operations"
+        ]
+      },
+      {
+        "group": "Tool reference",
+        "pages": [
+          "mcp/tools/overview",
+          "mcp/tools/profile",
+          "mcp/tools/booking",
+          "mcp/tools/contacts",
+          "mcp/tools/meetings",
+          "mcp/tools/calendars",
+          "mcp/tools/campaigns",
+          "mcp/tools/jobs",
+          "mcp/tools/billing",
+          "mcp/tools/booking-page-text",
+          "mcp/tools/booking-page-visibility",
+          "mcp/tools/booking-scheduling-rules",
+          "mcp/tools/booking-event-type",
+          "mcp/tools/booking-archive-event-type",
+          "mcp/tools/campaign-pause-sending",
+          "mcp/tools/actions",
+          "mcp/scopes"
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
+  "favicon": "/favicon.svg",
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
-    ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
   }
 }
