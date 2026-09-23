@@ -1,0 +1,78 @@
+---
+title: What an agent can and cannot do
+description: The reach of the Coffee Chats tool catalogue, the parts of the product that have no tool at all, and the rules every tool obeys.
+---
+
+A connection gives an agent a fixed list of named actions and nothing else. After reading this page you will know what those actions reach, which parts of Coffee Chats have no tool at all, and the four rules that hold for every tool in the catalogue.
+
+## The shape of the catalogue
+
+The connector publishes 59 tools. Each one carries a risk class in its protocol metadata, and the class says how the tool behaves rather than how important it is.
+
+| Risk class | How many | What it does |
+| --- | --- | --- |
+| `read` | 44 | Returns your own data. It changes nothing and never asks for your approval. |
+| `safe_write` | 10 | Changes one of your own settings as soon as the agent calls it. |
+| `consequential` | 5 | Proposes a change and writes nothing until you approve it in a browser. |
+
+The [tool reference](/mcp/tools/overview) is generated from the connector's own catalogue, so it cannot describe a tool the connector does not have. [Safe writes and approvals](/mcp/writes) explains why the writes split into two classes.
+
+## What the tools reach
+
+Everything in the catalogue is your own student work. The tools read and write your profile, your booking page and its event types, your contacts, your meetings, the stored state of your connected calendars, your campaigns, your internship applications, and your billing record.
+
+<Info>
+No tool sends an email and no tool spends credits. That is a property of the whole catalogue, not of one family: there is no tool whose name or description is about sending, dispatching or charging, and a check on every release fails if one appears while these pages say otherwise. The one tool with "sending" in its name, `campaign_pause_sending`, stops a campaign from sending.
+</Info>
+
+A tool reads only the account that authorized the connection. There is no tool that names another student, and no permission that widens a tool to a second account.
+
+## What no tool reaches
+
+Some parts of Coffee Chats have no tool, so an agent cannot start them at all. They stay in the app, where you do them yourself.
+
+<AccordionGroup>
+
+<Accordion title="Administrator screens">
+The connector covers your own student work and your own booking page. It has no tools for the administrator screens that universities and companies use, so an agent cannot touch those even if you hold an administrator account.
+</Accordion>
+
+<Accordion title="Guest links">
+If you give an agent a guest booking or cancellation link, that link still does only what a guest can do with it. It never becomes access to your account. No tool accepts a guest link, so an agent cannot use one.
+</Accordion>
+
+<Accordion title="Live meetings and media">
+Joining a meeting, admitting somebody who is waiting, controlling a transcript and ending a room are things a person does in the browser. No tool does any of them.
+</Accordion>
+
+<Accordion title="Payments and card details">
+Coffee Chats never accepts a payment credential through an agent. The billing tools only read. Entering or changing payment details stays in the app.
+</Accordion>
+
+<Accordion title="Resuming a paused campaign">
+An agent can pause a campaign's sending. There is no tool that starts it again, so you resume a campaign yourself in the app.
+</Accordion>
+
+</AccordionGroup>
+
+The same rule covers anything that only changes what you see in the app and has no effect on your account. The [tool reference](/mcp/tools/overview) also names, one by one, the endpoints that exist in the product and are deliberately not published as tools.
+
+## The four rules every tool obeys
+
+Every tool in the catalogue follows all four, whatever it reads or writes.
+
+1. A tool reads only the account that authorized the connection. It cannot reach another student's data.
+2. A tool returns a bounded amount of text. Where a stored value can be too large to fit, the tool returns a measured fragment and a cursor, and the agent asks for the next fragment until there is none left. A tool's own reference page says whether it can do this at all.
+3. A read tool that fails returns one fixed message with no code. It never explains why, because the reason could describe data you did not authorize.
+4. A tool that changes something either changes one of your own settings straight away, or proposes the change and waits for you to approve it in a browser.
+
+## Next steps
+
+<CardGroup cols="2">
+  <Card title="Permissions" href="/mcp/permissions">
+    How the consent screen decides which tools a connection can call.
+  </Card>
+  <Card title="Safe writes and approvals" href="/mcp/writes">
+    The two ways a change can happen, and the flow of an approval.
+  </Card>
+</CardGroup>

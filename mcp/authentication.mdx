@@ -1,17 +1,20 @@
 ---
-title: Authentication
-description: The two sign-in paths, the credentials a connection holds, how long each one lasts, and the limits on how often you can try.
+title: Sign-in and credentials
+description: The two sign-in paths, the credentials a connection holds, how long each one lasts, and why a replayed credential ends the connection.
 ---
 
-Signing in to an agent connection is separate from signing in to the Coffee Chats app. This page says how the sign-in works, what the agent host ends up holding, and how long each of those credentials lasts. Reading this page installs nothing and grants nothing. The [quickstart](/mcp/quickstart) walks through a first connection end to end.
+Signing in to an agent connection is separate from signing in to the Coffee Chats app. After reading this page you will know where the sign-in happens, what the agent host ends up holding, how long each of those credentials lasts, and what makes a connection end by itself. The [quickstart](/mcp/quickstart) walks through a first connection end to end.
 
 ## Where the sign-in happens
 
 Authorization happens on the Coffee Chats connector, in your own browser. Before it shows you a sign-in page, Coffee Chats checks the client identifier, the address the client wants to be sent back to, the permissions it asked for and the connector it says it wants access to. A request that fails any of those checks never reaches a sign-in page.
 
+<Check>
 You sign in with Google or with an emailed link, and there is no password anywhere in this flow. Your agent host never sees your Google account and never sees the link Coffee Chats emails you.
+</Check>
 
-## Google sign-in
+<Tabs>
+  <Tab title="Google sign-in">
 
 The Google path starts on the connector and comes back to a registered Coffee Chats address after Google has confirmed who you are. Coffee Chats then resolves your account with the same rules the app uses.
 
@@ -19,23 +22,23 @@ If your account still needs first-run onboarding, the flow stops and tells you t
 
 If you sign in with a Google account that is not the one on your Coffee Chats account, the page says so and asks you to sign in with the right one.
 
-## Sign-in by email link
+  </Tab>
+  <Tab title="Sign-in by email link">
 
 For an account that already exists, Coffee Chats can email you a link instead. The link completes only in the browser that started the authorization request, and it still needs you to confirm in that browser after you open it.
-
-The link lasts fifteen minutes. The sign-in attempt that asked for it lasts twenty minutes. The authorization your agent host started lasts ten minutes, which is the shortest of the three and therefore the clock that usually runs out first. The table below lists all three.
 
 Two consequences follow from the same-browser rule. Another device cannot use the link. A mail scanner that opens links before you do cannot finish the authorization by itself either.
 
 If you opened the link on the wrong device, start the authorization again from the agent host and stay in the browser you started in.
 
+  </Tab>
+</Tabs>
+
 ## Choosing permissions
 
 The consent page shows the name the application supplied, the Coffee Chats account you are signed in with, and every permission the application asked for with the sentence that describes it. The name is unchecked text, so the page marks it unverified and shows the application's origin under it. Read the origin. For a web application the origin is the web address its sign-in returns to. For a command-line tool there is no web address, and the origin reads `native://loopback`, which means the sign-in is handed back to a program on your own machine.
 
-There are no per-permission checkboxes on this page. You approve the whole list or you deny it.
-
-The connection receives the permissions you approve on that page and nothing else. The [permissions page](/mcp/scopes) lists all seventeen you can grant.
+There are no per-permission checkboxes on this page. You approve the whole list or you deny it. [Permissions](/mcp/permissions) explains what that list buys.
 
 ## Every connection is separate
 
@@ -62,33 +65,31 @@ The last three rows are the three clocks on one sign-in. The ten-minute one cove
 
 Each refresh credential can be used once. Using it returns a new one and retires the one presented.
 
-Presenting a retired refresh credential ends the whole connection, not just that credential. A credential arriving after it has already been spent is what a stolen credential being replayed looks like, and Coffee Chats treats it that way.
+<Warning>
+Presenting a retired refresh credential ends the whole connection. A credential arriving after it has already been spent is what a stolen credential being replayed looks like, and Coffee Chats treats it that way.
+</Warning>
 
 A connection therefore belongs to the machine that made it. Do not copy a refresh credential to a second machine or a second agent host. Authorize again from there instead.
 
-## How often you can try
-
-Coffee Chats limits how often these addresses answer. The limits are per minute unless the table says otherwise.
-
-| What you are doing | Limit |
-| --- | --- |
-| Starting or submitting a sign-in | 10 per minute from one address |
-| Coming back from Google | 30 per minute from one address |
-| Asking for an email sign-in link | 5 every 3 minutes from one address, and 1 every 3 minutes for one account |
-| Every other authorization request | 60 per minute from one address |
-| Agent calls on an open connection | 120 per minute for one connection |
-
-An agent that goes over the last limit gets a refusal with the code `rate_limited` and should wait and call again.
-
 ## Signing out, and deleting your account
 
-Signing out of the Coffee Chats app ends your own browser session. It reads nothing about your agent connections and disconnects none of them. If you want an agent to stop, disconnect it: see [revocation](/mcp/revocation).
+Signing out of the Coffee Chats app ends your own browser session. It reads nothing about your agent connections and disconnects none of them. If you want an agent to stop, disconnect it: see [ending a connection](/mcp/revocation).
 
 Deleting your Coffee Chats account does disconnect every agent connection on it. Account deletion scrubs your record first, and every write an agent could still have in flight checks that record before it commits, so nothing an agent started can land after the deletion has gone through.
 
-## Related pages
+## Next steps
 
-- [Quickstart](/mcp/quickstart)
-- [Permissions](/mcp/scopes)
-- [Approvals](/mcp/approvals)
-- [Revocation](/mcp/revocation)
+<CardGroup cols="2">
+  <Card title="Permissions" href="/mcp/permissions">
+    What you are agreeing to on the consent screen.
+  </Card>
+  <Card title="Ending a connection" href="/mcp/revocation">
+    Where to disconnect, and what a disconnect stops.
+  </Card>
+  <Card title="Limits and budgets" href="/mcp/limits">
+    How often each of these addresses answers.
+  </Card>
+  <Card title="Compatibility" href="/mcp/compatibility">
+    Which agent hosts Coffee Chats accepts today.
+  </Card>
+</CardGroup>

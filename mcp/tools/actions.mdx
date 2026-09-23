@@ -29,7 +29,7 @@ Risk: `safe_write`. This tool withdraws a request the agent proposed and changes
 
 ### Example call
 
-```json
+```json actions.cancel input
 {
   "operationId": "0123456789abcdef01234567"
 }
@@ -39,11 +39,13 @@ Risk: `safe_write`. This tool withdraws a request the agent proposed and changes
 
 A result is never larger than 4,096 bytes.
 
-This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1, where `status` is `failed`, carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1, where status is failed">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -52,9 +54,11 @@ Shape 1, where `status` is `failed`, carries these top-level fields:
 ]
 ```
 
-Shape 2, where `status` is `cancelled`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2, where status is cancelled">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -62,6 +66,10 @@ Shape 2, where `status` is `cancelled`, carries these top-level fields:
   "status"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### Outcomes
 

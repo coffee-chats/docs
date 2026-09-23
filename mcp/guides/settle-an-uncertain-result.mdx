@@ -1,0 +1,80 @@
+---
+title: Settle an uncertain result
+description: Recognise an uncertain outcome, read the value that settles it, and decide whether to make the change again.
+---
+
+An uncertain outcome is Coffee Chats declining to guess. It means the connector cannot prove whether the change was written, so it says so rather than reporting a success or a failure it cannot stand behind. This guide shows you how to settle one. It is the only failure where the right next call is a read rather than a retry.
+
+## Recognise it
+
+An uncertain result carries the status `uncertain` and the code `OUTCOME_UNKNOWN`:
+
+```json contacts.notes.update result
+{
+  "status": "uncertain",
+  "scenario": "uncertain",
+  "operationId": "0123456789abcdef01234567",
+  "error": {
+    "code": "OUTCOME_UNKNOWN",
+    "retryable": false,
+    "correlationId": "0123456789abcdef01234567"
+  }
+}
+```
+
+<Warning>
+Do not send the change again under a new key. A new key is a new change, so sending one before you have read what is stored can apply the same change twice.
+</Warning>
+
+Polling will not help either. Uncertain means the work is over and the answer is unavailable, so calling again returns the same thing.
+
+## Read the value that settles it
+
+Every write has one read that answers the question.
+
+| The write that was uncertain | The read that settles it |
+| --- | --- |
+| `profile.update` | `profile.get`, and look at the email-length preference |
+| `profile.job_search_stage.update` | `profile.job_search_stage.get` |
+| `contacts.notes.update` | `contacts.notes.get` for the same contact |
+| `contacts.tags.update` | `contacts.tags.get` for the same contact |
+| `meetings.notes.update` | `meetings.notes.get` for the same meeting |
+| `meetings.outcome.update` | `meetings.outcome.get` for the same meeting |
+| `campaign_pause_sending` | `campaigns.get`, and look at the sending state |
+| `campaigns.details.update` | `campaigns.get`, and look at the name, description and goal |
+| `jobs.applications.stage.update` | `jobs.applications.get`, and look at the stage and the priority |
+| `booking_update_page_text` | `booking.settings.get`, and look at the headline and welcome message |
+| `booking_update_page_visibility` | `booking.settings.get`, and look at whether the page is public |
+| `booking_update_scheduling_rules` | `booking.settings.get`, and look at the four scheduling rules |
+| `booking_update_event_type` | `booking.event_types.get` for the same event type |
+| `booking_archive_event_type` | `booking.event_types.get`, and look at whether it is active |
+
+For the contact note above, that read is:
+
+```json contacts.notes.get input
+{ "id": "0123456789abcdef01234567" }
+```
+
+## Decide from what you read
+
+Whatever the read returns is the answer.
+
+- If the stored value already matches what was asked for, the change landed. There is nothing to do.
+- If it does not match, the change can be made again under a new idempotency key.
+
+Tell the student what is stored now rather than what the result said. A raw code on its own tells them nothing.
+
+<Info>
+`actions.cancel` never returns an uncertain outcome. It answers either that the request is withdrawn or that it was no longer withdrawable, and there is nothing to reconcile.
+</Info>
+
+## Next steps
+
+<CardGroup cols="2">
+  <Card title="Handle errors and retries" href="/mcp/guides/handle-errors">
+    The other two shapes a failure arrives in.
+  </Card>
+  <Card title="Error codes" href="/mcp/errors">
+    Every code, its cause and the action to take.
+  </Card>
+</CardGroup>

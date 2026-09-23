@@ -1,0 +1,200 @@
+---
+title: Propose a booking page change
+description: Send one of the five consequential proposals, hand the student the review link, poll for the decision, and present every state that can come back.
+---
+
+This guide shows you how to make one of the five changes that Coffee Chats will not write without the student's approval. It covers the proposal, the handoff, the poll and each outcome. [Approvals](/mcp/approvals) is the same flow written for the student who presses the button.
+
+The five tools are `booking_update_page_text`, `booking_update_page_visibility`, `booking_update_scheduling_rules`, `booking_update_event_type` and `booking_archive_event_type`. All five are marked `consequential` in the tool metadata.
+
+<Steps>
+
+<Step title="Propose the change">
+
+Call the tool with the values you want and an idempotency key of 16 to 128 characters. Coffee Chats writes nothing. It creates a request and answers with a link:
+
+```json booking_update_page_text result
+{
+  "tag": "requires_confirmation",
+  "scenario": "loading",
+  "operationId": "0123456789abcdef01234567",
+  "actionStatus": "pending_approval",
+  "handoff": {
+    "kind": "action_review",
+    "url": "https://mcp.coffeechats.me/actions/0123456789abcdef01234567"
+  }
+}
+```
+
+That is the only answer you get before the student decides. The `operationId` names the request and the handoff URL ends with the same value.
+
+<Warning>
+The handoff URL is always on `mcp.coffeechats.me` and always has that form. A handoff URL anywhere else did not come from Coffee Chats and must not be opened or shown.
+</Warning>
+
+The five proposals take different inputs:
+
+<AccordionGroup>
+
+<Accordion title="Booking page text">
+
+```json booking_update_page_text input
+{
+  "headline": "Coffee chats about product internships",
+  "idempotencyKey": "example-idempotency-key-0002",
+  "welcomeMessage": "Pick any open slot and tell me what you would like to talk about."
+}
+```
+
+</Accordion>
+
+<Accordion title="Booking page visibility">
+
+```json booking_update_page_visibility input
+{
+  "idempotencyKey": "example-idempotency-key-0003",
+  "isPublic": true
+}
+```
+
+</Accordion>
+
+<Accordion title="Scheduling rules">
+Four bounded whole numbers, and the [booking scheduling rules tool](/mcp/tools/booking-scheduling-rules) page states the bound on each. The four rules move together, so send the values you want to keep as well as the ones you are changing.
+
+```json booking_update_scheduling_rules input
+{
+  "bufferAfter": 10,
+  "bufferBefore": 10,
+  "idempotencyKey": "example-idempotency-key-0005",
+  "minimumNotice": 12,
+  "rollingDays": 30
+}
+```
+
+</Accordion>
+
+<Accordion title="Event type details">
+The title is 1 to 100 characters, the description 0 to 500, and the duration a whole number of minutes from 5 to 480. The three fields move together, so read the event type with `booking.event_types.get` first and send back the values you are keeping. An empty description clears the description; an empty title is refused, because an event type must have one. A proposal whose three values are already the stored ones is refused as well.
+
+```json booking_update_event_type input
+{
+  "description": "Bring one question about internships.",
+  "duration": 45,
+  "eventTypeId": "0123456789abcdef01234567",
+  "idempotencyKey": "example-idempotency-key-0008",
+  "title": "Career questions"
+}
+```
+
+</Accordion>
+
+<Accordion title="Event type archive">
+`false` archives the event type and `true` restores one that was archived. Proposing the value the event type already stores is refused. So is archiving the only active event type the student has: a student always keeps at least one active event type, and that proposal is refused before any request exists, with the fixed error text every failed read uses.
+
+```json booking_archive_event_type input
+{
+  "eventTypeId": "0123456789abcdef01234567",
+  "idempotencyKey": "example-idempotency-key-0009",
+  "isActive": false
+}
+```
+
+</Accordion>
+
+</AccordionGroup>
+
+</Step>
+
+<Step title="Hand the link to the student">
+
+You cannot approve your own request, and there is no way to approve on the student's behalf. Give the student the link and three plain facts: nothing has been changed yet, the link shows exactly what would be changed, and the change happens only if they approve it there.
+
+The review page names the application that asked, marks that name unverified because it is text the application supplied, shows the proposed values in full, and shows the effect, the cost in credits and the recipient list.
+
+<Warning>
+Do not paraphrase the proposed values in your own words and then send different ones. What the student approves is what the page shows.
+</Warning>
+
+</Step>
+
+<Step title="Poll the same tool">
+
+There is no status address. Call the same tool again with only the identifier:
+
+```json booking_update_page_text input
+{ "operationId": "0123456789abcdef01234567" }
+```
+
+The answer is the current state of the request. Once the student has approved and the change has been applied, polling returns:
+
+```json booking_update_page_text result
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Booking page text updated", "itemCount": 1 }
+}
+```
+
+The other four tools return the same shape with their own summary. They are `Booking page visibility updated`, `Booking scheduling rules updated`, `Event type updated`, and, for the archive tool, `Event type archived` or `Event type restored` according to the direction that was approved.
+
+Poll at a human pace. The student has to open a link, read a page and press a button, so a tight loop only spends the connection's request budget, which the [limits](/mcp/limits) page states.
+
+</Step>
+
+<Step title="Present what comes back">
+
+A request is in one of nine states. Each arrives as a particular shape, and each deserves a different sentence to the student.
+
+| What you receive | Where the request is | What to tell the student |
+| --- | --- | --- |
+| `requires_confirmation`, `actionStatus` of `pending_approval` | Waiting for the student | Nothing has changed. Here is the link; open it to approve. |
+| `accepted`, `operationStatus` of `pending` | Approved, not started | You approved it. Coffee Chats has accepted the work and has not started it. |
+| `accepted`, `operationStatus` of `processing` | Being applied | The change is being applied now. |
+| `completed`, `operationStatus` of `succeeded` | Done | It is done, and it was applied exactly once. |
+| `failed` with `ACTION_DENIED` | Declined, or no longer allowed | You declined it, or the connection was no longer allowed to make the change. Nothing was written. |
+| `failed` with `ACTION_EXPIRED` | Expired before a decision | The request ran out of time and nothing was written. Ask again if you still want it. |
+| `failed` with `VERSION_CONFLICT`, `NOT_APPLIED` or `SERVICE_UNAVAILABLE` | Could not be applied | Say what the code means and what is stored now. The [error codes](/mcp/errors) page has the wording. An approved archive answers `NOT_APPLIED` when it would leave the student with no active event type. |
+| `uncertain` with `OUTCOME_UNKNOWN` | Outcome unknown | Coffee Chats cannot prove whether it landed. Here is what the page says now. |
+| `cancelled` with `OPERATION_CANCELLED` | Withdrawn, or disconnected before it ran | The request is gone and nothing was written, either because the agent withdrew it or because the connection was disconnected before the change started. |
+
+`ACTION_DENIED` and `ACTION_EXPIRED` are special cases of a failed result, so match them before the generic failed row.
+
+<Info>
+An `accepted` result with `processing` and an `uncertain` result look alike and are opposites. Accepted means work is under way and you should keep polling. Uncertain means the work is over and the answer is unavailable, and polling again will not turn it into a yes or a no.
+</Info>
+
+</Step>
+
+</Steps>
+
+## When the student edits the request
+
+The review pages for text, for scheduling rules and for event type details carry an edit form. If the student changes a value and saves, nothing is written: a new version of the same request is created, and it still needs approving. The identifier does not change, so keep polling with the value you already have and expect `requires_confirmation` until the student approves.
+
+You are not told what the student edited. If the poll eventually returns a completed result, the values that were written are the ones the student last saw, which may not be the ones you proposed. Read the booking page back with `booking.settings.get`, or the event type back with `booking.event_types.get`, before telling the student what it now says.
+
+The visibility proposal and the archive proposal have no edit form, because each carries a value with only two states. A student who wants the other direction declines and asks again.
+
+## Expiry
+
+A request expires thirty minutes after it was created. Editing it does not extend that deadline. After it expires, polling returns a failing result with `ACTION_EXPIRED` and nothing was written. Propose again with a new idempotency key if the student still wants the change.
+
+## If the student disconnects mid-request
+
+If the student disconnects while a request is waiting, or approved but not yet started, the request is cancelled and nothing is written. If the disconnect lands after the change has already started, Coffee Chats reports the outcome as unknown rather than claiming it was cancelled, because it cannot prove what that attempt did.
+
+In practice you will usually see neither answer, because a disconnect also stops the credential you were polling with, and the next protocol call after a disconnect is refused rather than answered. That refusal is the correct signal to stop. Tell the student to look at their booking page, which is the only place the real answer now lives.
+
+## Next steps
+
+<CardGroup cols="2">
+  <Card title="Withdraw a request" href="/mcp/guides/withdraw-a-request">
+    Take back a proposal the student has not decided yet.
+  </Card>
+  <Card title="Handle errors and retries" href="/mcp/guides/handle-errors">
+    Every shape a failure arrives in, and what to do about each.
+  </Card>
+</CardGroup>

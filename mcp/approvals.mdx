@@ -1,15 +1,15 @@
 ---
 title: Approvals
-description: The five changes an agent can only propose, what the review page shows, how each request can end, and how an agent withdraws one.
+description: The five changes an agent can only propose, what the review page shows you, and the nine states a request can be in.
 ---
 
-Most Coffee Chats tools only read your own data. Ten of them change one thing as soon as the agent calls them. Five of them cannot change anything on their own: the agent proposes the change, and nothing is written until you open a Coffee Chats page in your browser and approve what it shows you.
+Five tools cannot change anything on their own. The agent proposes the change, and nothing is written until you open a Coffee Chats page in your browser and approve what it shows you. After reading this page you will know what those five changes are, exactly what you are shown before you decide, and what every outcome means. [Safe writes and approvals](/mcp/writes) explains why these five are separated from the other ten write tools.
 
 A proposed change is called a request on this page and on the pages you see in the browser.
 
-## What needs your approval
+## The five requests
 
-Five tools, and all five are about your booking page. An event type is one kind of meeting you offer on that page, with its own title, description, duration and its own address on the site.
+All five are about your booking page. An event type is one kind of meeting you offer on that page, with its own title, description, duration and its own address on the site.
 
 | Tool | What it proposes |
 | --- | --- |
@@ -20,16 +20,6 @@ Five tools, and all five are about your booking page. An event type is one kind 
 | `booking_archive_event_type` | Archiving one of your event types so it stops appearing on your public page, or restoring one that was archived. |
 
 Every other tool is a read or a change that is applied straight away. The [tool reference](/mcp/tools/overview) marks each of the 59 tools with which it is.
-
-## How an approval works
-
-1. The agent calls one of the five tools with the values it wants to set.
-2. Coffee Chats writes nothing. It creates a request and answers the agent with a result tagged `requires_confirmation`, a request identifier, and a link of the form `https://mcp.coffeechats.me/actions/0123456789abcdef01234567`. That is the whole answer the agent gets before you decide.
-3. You open the link in your browser and sign in if you are not already signed in.
-4. You approve, decline, or, for three of the five kinds, edit the values and save a new version.
-5. The agent finds out what happened by calling the same tool again with the same request identifier. Your agent does that by itself, and you do not have to tell it what you chose. There is no separate status address, and an agent cannot approve its own request.
-
-A request waits thirty minutes from the moment it is made. After that it expires and nothing is written.
 
 ## What the review page shows you
 
@@ -46,47 +36,57 @@ The page is headed "Review action". It shows:
 
 Two notes appear when they apply. If your public page currently uses your education as the headline, the page says the approved headline will not show until that setting changes. If the request is a scheduling rules change, the page warns you about two things. The four values apply to every event type you offer. Approving writes all four at once, while the settings screen in the app saves them one at a time.
 
-## What an event type details request shows
+## What each kind of request adds
 
-This is the request `booking_update_event_type` makes. It carries three values together: the title, the description and the duration of one event type.
+<AccordionGroup>
 
-The page prints each of the three with the value stored on that event type beside it, and a sentence saying whether that value changes. If the proposed description is empty, the page says the description is being cleared. The title cannot be emptied, because an event type must have one.
+<Accordion title="Booking page text">
+The page prints the proposed headline and the proposed welcome message in full, so you approve the exact words that will appear. This request has an edit form.
+</Accordion>
+
+<Accordion title="Booking page visibility">
+The page says in one sentence which direction is proposed, and shows whether your page is public now. This request has no edit form, because a booking page is either public or private. If the agent proposed the wrong one, decline it and ask the agent to propose the other one.
+</Accordion>
+
+<Accordion title="Scheduling rules">
+The page prints each of the four values beside the value you have now. The four apply to every event type you offer, and approving writes all four at once. This request has an edit form.
+</Accordion>
+
+<Accordion title="Event type details">
+This request carries three values together: the title, the description and the duration of one event type. The page prints each of the three with the value stored on that event type beside it, and a sentence saying whether that value changes. If the proposed description is empty, the page says the description is being cleared. The title cannot be emptied, because an event type must have one.
 
 The page also names the event type it is about: the title it has now, its address on the site, its public address, and whether it is active or archived at the moment. That block sits with the current information rather than with the values, so it is not part of what you approve.
 
 Three notes appear on this kind of request. The duration is what a guest gets when they reschedule an existing booking, so changing it changes the length of bookings that already exist. An archived event type stays hidden from your public page, so approving this request does not publish it again. Saving this event type in Settings sends the title, the description and the duration together, so a later save there replaces what you approve here.
 
-This request has an edit form, and the button is labelled "Save a new event type version". Saving writes nothing. It creates a new version of the same request, and that version still needs approving.
+This request has an edit form, and the button is labelled "Save a new event type version".
+</Accordion>
 
-## What an event type archive request shows
-
-This is the request `booking_archive_event_type` makes. It goes in one of two directions. Archiving an event type stops it appearing on your public booking page. Restoring an archived one makes it appear again.
-
-The page says in one sentence which of the two is proposed, and it names the event type the same way the details request does.
+<Accordion title="Event type archive">
+This request goes in one of two directions. Archiving an event type stops it appearing on your public booking page. Restoring an archived one makes it appear again. The page says in one sentence which of the two is proposed, and it names the event type the same way the details request does.
 
 This request has no edit form, because an event type is either active or archived and one of the two is what the agent proposed. If the agent proposed the wrong direction, decline it and ask the agent to propose the other one.
 
 Two notes appear on this kind of request. Bookings that already exist on that event type keep working, and a guest can still reschedule one, because a reschedule finds the event type by its identifier rather than by whether it is active. Saving that event type in Settings marks it active again, so a later save there republishes what you archive here.
 
 You always keep at least one active event type. If the event type the agent names is the only active one you have, Coffee Chats refuses the request at the moment the agent makes it. No request is created, so nothing reaches your waiting list, and the agent receives the same fixed failure text every failed read receives. If your other event types are archived between your approval and the moment the change runs, the refusal comes then instead: nothing is written and the agent is told `NOT_APPLIED`.
+</Accordion>
+
+</AccordionGroup>
 
 ## Two things people get wrong
 
+<Warning>
 Editing the values is not approving them. If you change the headline, the welcome message, a scheduling number or an event type value on that page and save, you have created a new version of the request. Nothing has been written, and the new version still needs approving.
+</Warning>
 
 You are approving exactly the values shown, at exactly the version shown. The surrounding information, such as whether your booking page is public right now, is there so you can judge the request. It is not part of what you approve, and a later change to it does not invalidate your approval. If the values themselves change before your approval is applied, the approval no longer matches and the change is refused rather than applied to something else.
 
-The visibility request has no edit form, because a booking page is either public or private. If the agent proposed the wrong one, decline it and ask the agent to propose the other one.
+## How the agent learns what you chose
 
-## An agent can withdraw its own request
+The agent calls the same tool again with the same request identifier. It does that by itself, usually within a few seconds of your decision, and you do not have to tell it what you chose.
 
-The `actions.cancel` tool withdraws a request the same client proposed, while it is still waiting for your decision and no work has started. It needs the permissions the proposing tool needed, so a connection that has lost a permission cannot withdraw work it could no longer propose.
-
-There are two outcomes and no third. A request this tool withdraws, or finds already withdrawn, comes back as `OPERATION_CANCELLED`, so withdrawing twice is the same success. Anything else comes back as `VERSION_CONFLICT`: you had already decided, or the request had expired, or Coffee Chats had already started applying it. In each of those cases the request had already moved on, so the withdrawal did nothing.
-
-## Recent decisions
-
-When an agent withdraws a request, it disappears from your waiting list with no notification. So the list at `https://mcp.coffeechats.me/actions` shows a section headed "Recent decisions" under the requests that are still waiting. It holds up to ten requests that are no longer waiting for you, newest first, each with one sentence saying how it ended, the application that asked, and the day you or Coffee Chats decided it. Nothing in that section can still be approved.
+An agent can also withdraw a request it made, while you have still not decided and no work has started. [Withdraw a request](/mcp/guides/withdraw-a-request) is the procedure. When an agent withdraws a request, it disappears from your waiting list with no notification, so the list at `https://mcp.coffeechats.me/actions` shows a section headed "Recent decisions" under the requests that are still waiting. It holds up to ten requests that are no longer waiting for you, newest first, each with one sentence saying how it ended, the application that asked, and the day you or Coffee Chats decided it. Nothing in that section can still be approved.
 
 ## The state of a request
 
@@ -98,7 +98,7 @@ A request is always in one of nine states. This is what each one means for you.
 | Approved, not yet started | You said yes. Coffee Chats has accepted the work and has not started it. |
 | Being applied now | The change is under way. |
 | Done | The change was written, exactly once. |
-| Could not be applied | Something stopped it. The reasons are listed below. |
+| Could not be applied | Something stopped it. The [error codes](/mcp/errors) page says what. |
 | Outcome unknown | Coffee Chats cannot prove whether the change landed, and says so rather than guessing. |
 | You declined it | Nothing was written. |
 | It expired before you decided | Nothing was written. |
@@ -106,37 +106,23 @@ A request is always in one of nine states. This is what each one means for you.
 
 The words above describe your request. They are not the same as the short tags the agent sees in its own results, such as `requires_confirmation` or `accepted`. Those tags describe the shape of a message, not the state of your request, and your agent may present them differently.
 
-## Why a change could not be applied
-
-| Code the agent sees | What happened |
-| --- | --- |
-| `VERSION_CONFLICT` | The page changed after the agent read it, so nothing was written. Ask the agent to read the page again and propose the change from what is there now. |
-| `ACTION_DENIED` | Either you declined this request, or the connection was no longer allowed to make the change when Coffee Chats came to apply it. Nothing was written. |
-| `ACTION_EXPIRED` | The request ran out of time, either before you decided or before Coffee Chats could apply it. Nothing was written. |
-| `NOT_APPLIED` | Coffee Chats stopped before writing anything. Your data is exactly as it was. An archive that would leave you with no active event type ends this way. |
-| `SERVICE_UNAVAILABLE` | Coffee Chats could not do the work just now and wrote nothing. Try again later. |
-
-Two more codes are not failures of the change itself. `OPERATION_CANCELLED` means the request was withdrawn before the change started, so nothing was written. `OUTCOME_UNKNOWN` means Coffee Chats will not claim either way.
-
 ## When the outcome is unknown
 
 Coffee Chats reports an unknown outcome rather than guessing. When you see one, do not ask the agent to try again in the hope of forcing it through, because that could apply the change twice. Open your booking page and read it. Whatever it shows now is the true current state.
 
-## Things an agent cannot hand off to you
+## Next steps
 
-The Coffee Chats connector has no tool for any of the following, so an agent cannot start them at all. They stay in the app, where you do them yourself.
-
-Guest links. If you give an agent a guest booking or cancellation link, that link still does only what a guest can do with it. It never becomes access to your account. No tool accepts a guest link, so an agent cannot use one.
-
-Live meetings and media. Joining a meeting, admitting somebody who is waiting, controlling a transcript and ending a room are things a person does in the browser. No tool does any of them.
-
-Payments and card details. Coffee Chats never accepts a payment credential through an agent. The billing tools only read. Entering or changing payment details stays in the app.
-
-The same rule covers anything that only changes what you see in the app and has no effect on your account. Those parts of Coffee Chats have no tool, and the [tool reference](/mcp/tools/overview) lists by name the parts that are deliberately not published as tools.
-
-## Related pages
-
-- [Tool reference](/mcp/tools/overview)
-- [Quickstart](/mcp/quickstart)
-- [Revocation](/mcp/revocation)
-- [Authentication](/mcp/authentication)
+<CardGroup cols="2">
+  <Card title="Error codes" href="/mcp/errors">
+    Every reason a change could not be applied, and what to do.
+  </Card>
+  <Card title="Ending a connection" href="/mcp/revocation">
+    What a disconnect stops, and what can still finish.
+  </Card>
+  <Card title="Propose a booking page change" href="/mcp/guides/propose-a-booking-page-change">
+    The same flow, written for the person building the agent.
+  </Card>
+  <Card title="Tool reference" href="/mcp/tools/overview">
+    The exact input and result of each of the five tools.
+  </Card>
+</CardGroup>

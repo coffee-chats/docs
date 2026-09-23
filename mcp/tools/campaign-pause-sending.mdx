@@ -32,7 +32,7 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 
 ### Example call
 
-```json
+```json campaign_pause_sending input
 {
   "campaignId": "0123456789abcdef01234567",
   "idempotencyKey": "example-idempotency-key-0010"
@@ -43,11 +43,13 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 
 A result is never larger than 4,096 bytes.
 
-This tool's result takes one of these 4 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 4 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1, where `tag` is `completed`, carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1, where tag is completed">
+
+```json Top-level fields
 [
   "operationId",
   "operationStatus",
@@ -57,9 +59,11 @@ Shape 1, where `tag` is `completed`, carries these top-level fields:
 ]
 ```
 
-Shape 2, where `tag` is `accepted`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2, where tag is accepted">
+
+```json Top-level fields
 [
   "operationId",
   "operationStatus",
@@ -68,9 +72,11 @@ Shape 2, where `tag` is `accepted`, carries these top-level fields:
 ]
 ```
 
-Shape 3, where `status` is `failed`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 3, where status is failed">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -79,9 +85,11 @@ Shape 3, where `status` is `failed`, carries these top-level fields:
 ]
 ```
 
-Shape 4, where `status` is `uncertain`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 4, where status is uncertain">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -89,6 +97,10 @@ Shape 4, where `status` is `uncertain`, carries these top-level fields:
   "status"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### The result may carry a retry hint
 

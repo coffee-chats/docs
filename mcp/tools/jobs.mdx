@@ -33,7 +33,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json jobs.applications.list input
 {
   "limit": 10,
   "stage": "APPLIED"
@@ -45,26 +45,34 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 A result is never larger than 16,384 bytes.
 If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
 
-This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1 carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1">
+
+```json Top-level fields
 [
   "applications",
   "nextCursor"
 ]
 ```
 
-Shape 2 carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2">
+
+```json Top-level fields
 [
   "applications",
   "fragment",
   "nextCursor"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### Errors
 
@@ -87,7 +95,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json jobs.applications.get input
 {
   "id": "0123456789abcdef01234567"
 }
@@ -98,25 +106,33 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 A result is never larger than 16,384 bytes.
 If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
 
-This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1 carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1">
+
+```json Top-level fields
 [
   "application"
 ]
 ```
 
-Shape 2 carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2">
+
+```json Top-level fields
 [
   "application",
   "fragment",
   "nextCursor"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### Errors
 
@@ -139,7 +155,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json jobs.applications.referrals.list input
 {
   "id": "0123456789abcdef01234567"
 }
@@ -151,7 +167,7 @@ A result is never larger than 16,384 bytes.
 
 A result carries these top-level fields:
 
-```json
+```json Top-level fields
 [
   "nextCursor",
   "referrals"
@@ -179,7 +195,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json jobs.postings.get input
 {
   "id": "0123456789abcdef01234567"
 }
@@ -190,25 +206,33 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 A result is never larger than 16,384 bytes.
 If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
 
-This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1 carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1">
+
+```json Top-level fields
 [
   "posting"
 ]
 ```
 
-Shape 2 carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2">
+
+```json Top-level fields
 [
   "fragment",
   "nextCursor",
   "posting"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### Errors
 
@@ -235,7 +259,7 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 
 ### Example call
 
-```json
+```json jobs.applications.stage.update input
 {
   "applicationId": "0123456789abcdef01234567",
   "idempotencyKey": "example-idempotency-key-0012",
@@ -248,11 +272,13 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 
 A result is never larger than 4,096 bytes.
 
-This tool's result takes one of these 4 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 4 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1, where `tag` is `completed`, carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1, where tag is completed">
+
+```json Top-level fields
 [
   "operationId",
   "operationStatus",
@@ -262,9 +288,11 @@ Shape 1, where `tag` is `completed`, carries these top-level fields:
 ]
 ```
 
-Shape 2, where `tag` is `accepted`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2, where tag is accepted">
+
+```json Top-level fields
 [
   "operationId",
   "operationStatus",
@@ -273,9 +301,11 @@ Shape 2, where `tag` is `accepted`, carries these top-level fields:
 ]
 ```
 
-Shape 3, where `status` is `failed`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 3, where status is failed">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -284,9 +314,11 @@ Shape 3, where `status` is `failed`, carries these top-level fields:
 ]
 ```
 
-Shape 4, where `status` is `uncertain`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 4, where status is uncertain">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -294,6 +326,10 @@ Shape 4, where `status` is `uncertain`, carries these top-level fields:
   "status"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### The result may carry a retry hint
 

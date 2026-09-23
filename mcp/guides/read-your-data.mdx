@@ -1,0 +1,104 @@
+---
+title: Read your data
+description: Find the connector, list its tools, make a first read, page a list with a cursor, and reassemble a value that arrives in fragments.
+---
+
+This guide shows you how to get data out of Coffee Chats from an agent. It covers discovery, the first read, the two paging mechanisms and what to do when a read fails. It assumes the connection is already authorized: the [quickstart](/mcp/quickstart) covers that part.
+
+## Find the connector
+
+Give the agent host the connector address and nothing else. The host asks the connector which authorization server protects it, at the standard discovery address `/.well-known/oauth-protected-resource/mcp`, and the answer names that authorization server. It then reads the authorization server's own configuration document at `/oauth/mcp/.well-known/openid-configuration`. Both answers are public and neither needs a credential.
+
+Do not configure an authorization server by hand. A host that follows the protocol finds it from those two documents.
+
+## List the tools
+
+Once the connection is authorized, list tools and you receive the whole catalogue. Every tool carries its risk class as protocol metadata under the key `coffeechats/risk`, with the value `read`, `safe_write` or `consequential`, so the agent can tell a read from a write before it calls anything. The [tool reference](/mcp/tools/overview) is generated from that same catalogue.
+
+## Make the first read
+
+`profile.get` is the smallest honest first call. It takes no input:
+
+```json profile.get input
+{}
+```
+
+It returns the authenticated student's own profile. If it returns that student's data, the connection is working end to end.
+
+## Page a list with a cursor
+
+A list tool takes an optional `cursor` and returns `nextCursor` beside its items. Send the value back unchanged on the next call to continue, and stop when `nextCursor` is null.
+
+```json contacts.list input
+{ "limit": 10, "status": "APPROVED" }
+```
+
+The cursor is opaque. The only correct thing to do with it is to send it back unchanged. The one rule worth checking is its length, which each tool's own reference page states as a bound of either 256 or 512 characters.
+
+## Reassemble a value that arrives in fragments
+
+Some tools read a single stored value that can be larger than the tool's result budget. Rather than truncate it, the tool returns a measured fragment. Ask for one note:
+
+```json contacts.notes.get input
+{ "id": "0123456789abcdef01234567" }
+```
+
+The first answer carries the first chunk and a cursor. A real call cuts each chunk at the tool's byte budget, so the chunks below are short enough to fit on this page instead:
+
+```json contacts.notes.get result
+{
+  "fragment": {
+    "id": "0123456789abcdef01234567",
+    "jsonChunk": "\"Met at the spring fintech mixer. Follow u",
+    "offset": 0,
+    "complete": false
+  },
+  "nextCursor": "eyJpZCI6IjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2NyIsIm9mZnNldCI6NDJ9"
+}
+```
+
+The `id` names the value being fragmented, `offset` says where this chunk starts in it, and `complete` says whether this is the last one. The cursor is the same identifier and the next offset, encoded. Keep calling the same tool with `nextCursor` and concatenate every `jsonChunk` in the order received. The last answer sets `complete` to true and `nextCursor` to null:
+
+```json contacts.notes.get result
+{
+  "fragment": {
+    "id": "0123456789abcdef01234567",
+    "jsonChunk": "p in April about the referral.\"",
+    "offset": 42,
+    "complete": true
+  },
+  "nextCursor": null
+}
+```
+
+The concatenation of every `jsonChunk` is the whole document, and only then do you parse it as JSON. A note short enough to fit comes back in one answer of this second shape, with `offset` at zero.
+
+<Warning>
+Never parse a chunk on its own. A chunk is cut at a safe character boundary rather than at a syntactic one, so a single chunk is usually not valid JSON. The two chunks above are pieces of one JSON string: the first carries that string's opening quotation mark and the second its closing one.
+</Warning>
+
+A tool's own reference page says whether it can return a fragment at all.
+
+## When a read fails
+
+Every read tool reports every failure the same way, with no code and no reason:
+
+```json Protocol error envelope
+{
+  "isError": true,
+  "content": [{ "type": "text", "text": "Tool call failed." }]
+}
+```
+
+A call to a tool whose permission was not granted arrives in exactly this shape, and so does a read of a record that does not exist. Do not try to tell those apart. Ask for the permissions you need at consent time rather than probing for them by calling tools. [Handle errors and retries](/mcp/guides/handle-errors) covers the failures that do carry a code.
+
+## Next steps
+
+<CardGroup cols="2">
+  <Card title="Update a preference safely" href="/mcp/guides/update-a-preference">
+    The first write, with its replay and its conflict.
+  </Card>
+  <Card title="Limits and budgets" href="/mcp/limits">
+    The request limits and the result size budgets these reads sit under.
+  </Card>
+</CardGroup>

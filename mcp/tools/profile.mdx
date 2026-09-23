@@ -28,7 +28,7 @@ This tool takes no input.
 
 ### Example call
 
-```json
+```json profile.get input
 {}
 ```
 
@@ -38,7 +38,7 @@ A result is never larger than 16,384 bytes.
 
 A result carries these top-level fields:
 
-```json
+```json Top-level fields
 [
   "aboutMe",
   "educationCount",
@@ -72,7 +72,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json profile.education.list input
 {}
 ```
 
@@ -82,7 +82,7 @@ A result is never larger than 16,384 bytes.
 
 A result carries these top-level fields:
 
-```json
+```json Top-level fields
 [
   "education",
   "nextCursor"
@@ -110,7 +110,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json profile.job_preferences.get input
 {
   "list": "targetRoles"
 }
@@ -122,7 +122,7 @@ A result is never larger than 16,384 bytes.
 
 A result carries these top-level fields:
 
-```json
+```json Top-level fields
 [
   "list",
   "nextCursor",
@@ -148,7 +148,7 @@ This tool takes no input.
 
 ### Example call
 
-```json
+```json profile.job_search_stage.get input
 {}
 ```
 
@@ -158,7 +158,7 @@ A result is never larger than 4,096 bytes.
 
 A result carries these top-level fields:
 
-```json
+```json Top-level fields
 [
   "experienceLevel",
   "onboarding",
@@ -188,7 +188,7 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 
 ### Example call
 
-```json
+```json profile.update input
 {
   "emailLength": "short",
   "idempotencyKey": "example-idempotency-key-0001"
@@ -199,11 +199,13 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 
 A result is never larger than 4,096 bytes.
 
-This tool's result takes one of these 4 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 4 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1, where `tag` is `completed`, carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1, where tag is completed">
+
+```json Top-level fields
 [
   "operationId",
   "operationStatus",
@@ -213,9 +215,11 @@ Shape 1, where `tag` is `completed`, carries these top-level fields:
 ]
 ```
 
-Shape 2, where `tag` is `accepted`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2, where tag is accepted">
+
+```json Top-level fields
 [
   "operationId",
   "operationStatus",
@@ -224,9 +228,11 @@ Shape 2, where `tag` is `accepted`, carries these top-level fields:
 ]
 ```
 
-Shape 3, where `status` is `failed`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 3, where status is failed">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -235,9 +241,11 @@ Shape 3, where `status` is `failed`, carries these top-level fields:
 ]
 ```
 
-Shape 4, where `status` is `uncertain`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 4, where status is uncertain">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -245,6 +253,10 @@ Shape 4, where `status` is `uncertain`, carries these top-level fields:
   "status"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### The result may carry a retry hint
 
@@ -287,7 +299,7 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 
 ### Example call
 
-```json
+```json profile.job_search_stage.update input
 {
   "experienceLevel": "college_junior",
   "idempotencyKey": "example-idempotency-key-0004",
@@ -300,11 +312,13 @@ Risk: `safe_write`. This tool changes one of your own settings as soon as the ag
 
 A result is never larger than 4,096 bytes.
 
-This tool's result takes one of these 4 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 4 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1, where `tag` is `completed`, carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1, where tag is completed">
+
+```json Top-level fields
 [
   "operationId",
   "operationStatus",
@@ -314,9 +328,11 @@ Shape 1, where `tag` is `completed`, carries these top-level fields:
 ]
 ```
 
-Shape 2, where `tag` is `accepted`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2, where tag is accepted">
+
+```json Top-level fields
 [
   "operationId",
   "operationStatus",
@@ -325,9 +341,11 @@ Shape 2, where `tag` is `accepted`, carries these top-level fields:
 ]
 ```
 
-Shape 3, where `status` is `failed`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 3, where status is failed">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -336,9 +354,11 @@ Shape 3, where `status` is `failed`, carries these top-level fields:
 ]
 ```
 
-Shape 4, where `status` is `uncertain`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 4, where status is uncertain">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -346,6 +366,10 @@ Shape 4, where `status` is `uncertain`, carries these top-level fields:
   "status"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### The result may carry a retry hint
 

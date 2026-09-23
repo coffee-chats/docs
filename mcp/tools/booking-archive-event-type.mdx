@@ -33,9 +33,17 @@ The agent sends exactly one of these shapes and never a mixture of them. Each sh
 | `idempotencyKey` | string | yes | 16 to 128 characters |
 | `isActive` | boolean | yes | none stated |
 
-##### Example call
+#### Shape 2, sending `operationId`
 
-```json
+| Property | Type | Required | Bounds |
+| --- | --- | --- | --- |
+| `operationId` | string | yes | pattern `^[a-f0-9]{24}$` |
+
+### Example calls
+
+<CodeGroup>
+
+```json booking_archive_event_type input shape 1
 {
   "eventTypeId": "0123456789abcdef01234567",
   "idempotencyKey": "example-idempotency-key-0009",
@@ -43,29 +51,25 @@ The agent sends exactly one of these shapes and never a mixture of them. Each sh
 }
 ```
 
-#### Shape 2, sending `operationId`
-
-| Property | Type | Required | Bounds |
-| --- | --- | --- | --- |
-| `operationId` | string | yes | pattern `^[a-f0-9]{24}$` |
-
-##### Example call
-
-```json
+```json booking_archive_event_type input shape 2
 {
   "operationId": "0123456789abcdef01234567"
 }
 ```
 
+</CodeGroup>
+
 ### Result
 
 A result is never larger than 4,096 bytes.
 
-This tool's result takes one of these 6 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 6 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1, where `tag` is `completed`, carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1, where tag is completed">
+
+```json Top-level fields
 [
   "operationId",
   "operationStatus",
@@ -75,9 +79,11 @@ Shape 1, where `tag` is `completed`, carries these top-level fields:
 ]
 ```
 
-Shape 2, where `tag` is `requires_confirmation`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2, where tag is requires_confirmation">
+
+```json Top-level fields
 [
   "actionId",
   "actionStatus",
@@ -88,9 +94,11 @@ Shape 2, where `tag` is `requires_confirmation`, carries these top-level fields:
 ]
 ```
 
-Shape 3, where `tag` is `accepted`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 3, where tag is accepted">
+
+```json Top-level fields
 [
   "operationId",
   "operationStatus",
@@ -99,9 +107,11 @@ Shape 3, where `tag` is `accepted`, carries these top-level fields:
 ]
 ```
 
-Shape 4, where `status` is `failed`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 4, where status is failed">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -110,9 +120,11 @@ Shape 4, where `status` is `failed`, carries these top-level fields:
 ]
 ```
 
-Shape 5, where `status` is `cancelled`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 5, where status is cancelled">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -121,9 +133,11 @@ Shape 5, where `status` is `cancelled`, carries these top-level fields:
 ]
 ```
 
-Shape 6, where `status` is `uncertain`, carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 6, where status is uncertain">
+
+```json Top-level fields
 [
   "error",
   "operationId",
@@ -131,6 +145,10 @@ Shape 6, where `status` is `uncertain`, carries these top-level fields:
   "status"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### The result may carry a retry hint
 

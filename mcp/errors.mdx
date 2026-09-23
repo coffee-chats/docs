@@ -1,0 +1,51 @@
+---
+title: Error codes
+description: Every code the Coffee Chats connector publishes, where it arrives, what causes it and what to do about it.
+---
+
+This page lists every error code the connector publishes. Each row says where the code arrives, what caused it and the action to take. A code outside this list is not something Coffee Chats sends. [Handle errors and retries](/mcp/guides/handle-errors) is the procedure that uses this table.
+
+## Codes in a failing result
+
+These arrive inside the `error` object of a structured result from one of the fifteen write tools. In every one of them, nothing was written.
+
+| Code | Cause | Action |
+| --- | --- | --- |
+| `VERSION_CONFLICT` | The value changed after the agent read it, or the same idempotency key was sent again with different input. On `actions.cancel` it means the request was no longer withdrawable. | Read the value again and make the change from what is there now, with a new key. After a refused withdrawal, poll the request instead. |
+| `ACTION_DENIED` | The student declined the request, or the connection was no longer allowed to make the change when Coffee Chats came to apply it. | Stop. Do not call again. Tell the student the change was refused. |
+| `ACTION_EXPIRED` | The change ran out of time before it started, or the request expired before the student decided. | Ask once more with a new key, and only if the student still wants it. |
+| `NOT_APPLIED` | Coffee Chats can prove it stopped before writing anything. On an approved `booking_archive_event_type` request it also means the archive would have left the student with no active event type. | Make the change again with a new key. After a refused archive, read the student's event types again and do not propose the archive until another one is active. |
+| `SERVICE_UNAVAILABLE` | Coffee Chats could not do the work just now. | Try again later with a new key. |
+
+## Codes in a cancelled or uncertain result
+
+| Code | Where it arrives | Cause | Action |
+| --- | --- | --- | --- |
+| `OPERATION_CANCELLED` | Cancelled result | On a proposal, the connection was disconnected before the change started, so nothing was written. On `actions.cancel` it is the success answer: the request is withdrawn. | After a disconnect, stop and ask the student to authorize again. After a withdrawal, tell the student the request is gone and nothing was changed. |
+| `OUTCOME_UNKNOWN` | Uncertain result | Coffee Chats cannot prove whether the change was written, and will not guess. | Read the value back and treat what is stored as the answer. Do not send the change again under a new key until you have read what is stored. [Settle an uncertain result](/mcp/guides/settle-an-uncertain-result) has the read for every write. |
+
+## Codes in a retry hint
+
+These two never arrive in a failing result. They ride in the metadata beside an accepted result, and nothing has failed when you see one.
+
+| Code | Cause | Action |
+| --- | --- | --- |
+| `PERMIT_BACKPRESSURE` | Too much work is already running on this connection. | Wait for the stated delay and call again with the same key. |
+| `PERMIT_CONTENTION` | Another call was holding the same slot. | Wait for the stated delay and call again with the same key. |
+
+## Failures that carry no code
+
+Every read tool reports every failure with one fixed message and no code. A write that fails before it produces a result of its own arrives the same way, and so does a call to a tool whose permission was not granted. There is nothing to branch on. The reason is withheld on purpose, because the reason could itself describe data the connection was not allowed to see.
+
+A request refused for rate limiting carries no code from this page either. It is answered with the status `429` and standard rate-limit headers, and the [limits](/mcp/limits) page states what each limiter counts.
+
+## Next steps
+
+<CardGroup cols="2">
+  <Card title="Handle errors and retries" href="/mcp/guides/handle-errors">
+    The three shapes a failure arrives in, and the five things never to do.
+  </Card>
+  <Card title="Tool reference" href="/mcp/tools/overview">
+    Each tool's own page lists the codes that tool can return.
+  </Card>
+</CardGroup>

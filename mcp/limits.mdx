@@ -1,0 +1,82 @@
+---
+title: Limits and budgets
+description: The request limits on every Coffee Chats address, the size of a request body and a result, and the bounds on work in flight.
+---
+
+This page states every limit the connector applies: how often each address answers, how large a request body and a result may be, and how much work one connection can have in flight. Each number is what the connector enforces today.
+
+## Request limits
+
+A refused request is answered with the status `429` and standard rate-limit headers, including the limit, the remaining count, the reset time and a retry-after value. Honour the retry-after value.
+
+| What you are doing | Limit | Counted per |
+| --- | --- | --- |
+| Starting or submitting a sign-in | 10 per minute | Calling network address |
+| Coming back from Google | 30 per minute | Calling network address |
+| Asking for an email sign-in link | 5 every 3 minutes | Calling network address |
+| Asking for an email sign-in link | 1 every 3 minutes | Account |
+| Every other authorization request | 60 per minute | Calling network address |
+| Opening or deciding a request in the browser | 60 per minute | Calling network address |
+| Opening or deciding a request in the browser | 30 per minute | Account |
+| Agent calls on an open connection | 120 per minute | Connection and client together |
+
+The protocol limiter answers a refusal with this body:
+
+```json Rate limit response body
+{ "error": "rate_limited" }
+```
+
+<Warning>
+A polling loop that ignores the retry-after value will spend the whole budget on one waiting request and lock the agent out of its own reads. Poll a pending approval at a human pace.
+</Warning>
+
+## Request body size
+
+A request body sent to the protocol address is accepted up to 64 kilobytes. A larger body is refused with the status `413`. No tool input the catalogue defines comes close to that.
+
+## Result size
+
+Every tool declares a maximum result size, and its own page in the [tool reference](/mcp/tools/overview) prints the number.
+
+| Tools | Budget |
+| --- | --- |
+| The fifteen write tools | 4,096 bytes |
+| `profile.job_search_stage.get` | 4,096 bytes |
+| The other forty-three read tools | 16,384 bytes |
+
+The budget is measured on the whole result as it goes over the wire, so the wrapping JSON counts as well as the data.
+
+A result that would exceed its budget is not truncated. Tools whose single stored value can grow past the budget return a measured fragment and a cursor instead, and [read your data](/mcp/guides/read-your-data) describes how to reassemble one. For any other tool, a result over the budget fails with the same fixed error every read failure uses, which is why the reads are narrow and paged in the first place.
+
+A cursor is bounded too. Each tool that takes one states its length in its own input table, as either 256 or 512 characters.
+
+## Idempotency keys
+
+| Rule | Value |
+| --- | --- |
+| Length of a key | 16 to 128 characters |
+| Write tools that take one | 14 of the 15 |
+| The exception | `actions.cancel`, which takes a request identifier instead |
+
+A stored change is made unique by the connection, the tool name and the key together.
+
+## Work in flight
+
+A connection can have at most four changes cleared to run at once. Each clearance lasts thirty seconds, and that is a deadline for starting rather than a promise about finishing. A change that holds a clearance and does not start within it is refused and nothing is written. A change that has already started is not stopped, including by a disconnect.
+
+A request that needs approval waits thirty minutes from the moment it is made, and editing it does not extend that deadline.
+
+## Credential lifetimes
+
+The [sign-in and credentials](/mcp/authentication) page carries the full table. The two numbers that shape an agent's behaviour are that an access credential lasts ten minutes, and that a refresh credential can be used once.
+
+## Next steps
+
+<CardGroup cols="2">
+  <Card title="Handle errors and retries" href="/mcp/guides/handle-errors">
+    What to do when a limit refuses a call.
+  </Card>
+  <Card title="Tool reference" href="/mcp/tools/overview">
+    Each tool's own result budget and cursor bound.
+  </Card>
+</CardGroup>

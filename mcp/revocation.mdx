@@ -1,17 +1,18 @@
 ---
-title: Revocation
+title: Ending a connection
 description: Where to disconnect an agent, what a disconnect stops at once, what can still finish, and how it differs from signing out.
 ---
 
-An agent connection can be disconnected on its own. Disconnecting one does not affect your Coffee Chats account, your ordinary sign-in, or any other connection.
+An agent connection can be disconnected on its own. After reading this page you will know where to do it, what stops immediately, what can still finish after you have done it, and why signing out of the app is not the same thing. Disconnecting one connection does not affect your Coffee Chats account, your ordinary sign-in, or any other connection.
 
 ## Where you disconnect an agent
 
 There are two places, and both do exactly the same thing.
 
-The connections page in your browser, at `https://mcp.coffeechats.me/connections`. The button on each entry there is labelled "Revoke".
-
-The Coffee Chats app, under Settings, on the Integrations tab, in the section headed "Connected apps". The button there is labelled "Disconnect".
+| Where | The button |
+| --- | --- |
+| The connections page at `https://mcp.coffeechats.me/connections` | Revoke |
+| The Coffee Chats app, under Settings, on the Integrations tab, in the section headed "Connected apps" | Disconnect |
 
 Whichever one you use, Coffee Chats works out the account from the session you are already signed in with. You never name an account, and no agent can name one for you.
 
@@ -25,7 +26,9 @@ An entry that has been used shows the day it was last used, as a date rather tha
 
 Signing out of the Coffee Chats web or mobile app ends your own browser session and invalidates your own sign-in credential. It reads nothing about your agent connections and disconnects none of them.
 
+<Warning>
 If you want an agent to stop, disconnect it. Signing out will not do it.
+</Warning>
 
 ## What a disconnect does
 
@@ -35,7 +38,11 @@ The next call the agent makes on that connection is refused, and so is any attem
 
 ## What can still finish
 
-A disconnect also stops any change Coffee Chats has not already cleared to run. A connection can have at most four changes cleared to run at once. Each of those has thirty seconds to start, and a change that is already running is not stopped. Thirty seconds is a deadline for starting, not a promise that the change has finished or been stopped.
+A disconnect also stops any change Coffee Chats has not already cleared to run. Clearance is bounded in three ways, and the bounds are the whole of what can still happen:
+
+- A connection can hold at most four clearances at once.
+- A clearance lasts thirty seconds, and that is a deadline for starting rather than a promise that the change has finished. A change that holds a clearance and does not start within it is refused, and nothing is written.
+- A change that has already started is not stopped.
 
 So a change that was already under way either landed or it did not. The connections list will not tell you which. Look at the thing that was being changed, such as your booking page or the setting itself, and see what it says now.
 
@@ -49,8 +56,13 @@ If somebody guesses a connection identifier, Coffee Chats answers the same way f
 
 Deleting your Coffee Chats account disconnects every live agent connection on it. Your record is scrubbed first, and every write an agent could still have in flight checks that record before it commits, so nothing an agent started can land afterwards.
 
-## Related pages
+## Next steps
 
-- [Approvals](/mcp/approvals)
-- [Authentication](/mcp/authentication)
-- [Quickstart](/mcp/quickstart)
+<CardGroup cols="2">
+  <Card title="Disconnect an agent" href="/mcp/guides/disconnect">
+    The short procedure, and what to check afterwards.
+  </Card>
+  <Card title="Sign-in and credentials" href="/mcp/authentication">
+    What a disconnected connection was holding.
+  </Card>
+</CardGroup>

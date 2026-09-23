@@ -5,55 +5,66 @@
   "colors": {
     "primary": "#5C4033"
   },
-  "navigation": {
-    "groups": [
-      {
-        "group": "Get started",
-        "pages": [
-          "index",
-          "mcp/quickstart",
-          "mcp/authentication",
-          "mcp/approvals",
-          "mcp/compatibility",
-          "mcp/revocation"
-        ]
-      },
-      {
-        "group": "Recipes",
-        "pages": [
-          "mcp/recipes/workflow",
-          "mcp/recipes/errors",
-          "mcp/recipes/approvals",
-          "mcp/recipes/operations"
-        ]
-      },
-      {
-        "group": "Tool reference",
-        "pages": [
-          "mcp/tools/overview",
-          "mcp/tools/profile",
-          "mcp/tools/booking",
-          "mcp/tools/contacts",
-          "mcp/tools/meetings",
-          "mcp/tools/calendars",
-          "mcp/tools/campaigns",
-          "mcp/tools/jobs",
-          "mcp/tools/billing",
-          "mcp/tools/booking-page-text",
-          "mcp/tools/booking-page-visibility",
-          "mcp/tools/booking-scheduling-rules",
-          "mcp/tools/booking-event-type",
-          "mcp/tools/booking-archive-event-type",
-          "mcp/tools/campaign-pause-sending",
-          "mcp/tools/actions",
-          "mcp/scopes"
-        ]
-      }
-    ]
-  },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.png",
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  }
+    "light": "/logo/light.png",
+    "dark": "/logo/dark.png"
+  },
+  "navigation": { "groups": [
+    {
+      "group": "Get started",
+      "pages": [
+        "index",
+        "mcp/quickstart"
+      ]
+    },
+    {
+      "group": "How it works",
+      "pages": [
+        "mcp/agents-and-tools",
+        "mcp/permissions",
+        "mcp/writes",
+        "mcp/approvals",
+        "mcp/authentication",
+        "mcp/revocation"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "mcp/guides/read-your-data",
+        "mcp/guides/update-a-preference",
+        "mcp/guides/propose-a-booking-page-change",
+        "mcp/guides/handle-errors",
+        "mcp/guides/settle-an-uncertain-result",
+        "mcp/guides/withdraw-a-request",
+        "mcp/guides/disconnect"
+      ]
+    },
+    {
+      "group": "Reference",
+      "pages": [
+        "mcp/tools/overview",
+        "mcp/tools/profile",
+        "mcp/tools/booking",
+        "mcp/tools/contacts",
+        "mcp/tools/meetings",
+        "mcp/tools/calendars",
+        "mcp/tools/campaigns",
+        "mcp/tools/jobs",
+        "mcp/tools/billing",
+        "mcp/tools/booking-page-text",
+        "mcp/tools/booking-page-visibility",
+        "mcp/tools/booking-scheduling-rules",
+        "mcp/tools/booking-event-type",
+        "mcp/tools/booking-archive-event-type",
+        "mcp/tools/campaign-pause-sending",
+        "mcp/tools/actions",
+        "mcp/scopes",
+        "mcp/errors",
+        "mcp/limits",
+        "mcp/compatibility"
+      ]
+    }
+  ] }
 }

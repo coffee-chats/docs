@@ -1,0 +1,63 @@
+---
+title: Permissions
+description: What a permission is, how the consent screen grants one, what happens when a permission is missing, and why the tool list is the honest answer.
+---
+
+A permission is one named thing you allow a connection to do. After reading this page you will know how permissions are asked for and granted, what a connection can do with one, what it cannot do without one, and where to read the exact wording of each.
+
+## Where a permission comes from
+
+An agent host asks for a list of permissions when it starts the sign-in flow. Coffee Chats checks that list before it shows you anything, and a request for a permission that is not grantable never reaches a sign-in page.
+
+After you sign in, the consent screen shows the list it asked for, one line per permission, each with the sentence that says what the permission covers. Those sentences are the product's own wording. The [permissions reference](/mcp/scopes) is generated from the same source as the screen, so the wording on that page is the wording you will read.
+
+<Warning>
+There are no per-permission checkboxes. You approve the whole list or you deny it. If the list holds something you do not want, deny it and ask your agent host to request fewer permissions.
+</Warning>
+
+The connection receives the permissions you approved and nothing else. Approving a wide list does not widen the tools; it only widens which of the 59 tools the connection may call.
+
+## Seventeen permissions you can grant
+
+Sixteen of them control tools. The seventeenth, `offline_access`, controls nothing but the life of the connection.
+
+| Kind | Permissions |
+| --- | --- |
+| Read | `profile:read`, `booking:read`, `contacts:read`, `meetings:read`, `meetings:transcript:read`, `campaigns:read`, `mail:read`, `jobs:read`, `integrations:read`, `billing:read` |
+| Write | `profile:write`, `booking:write`, `contacts:write`, `meetings:write`, `campaigns:write`, `jobs:write` |
+| Connection life | `offline_access` |
+
+`offline_access` is not a permission to read anything. It lets the agent host keep the connection alive with rotating refresh credentials instead of sending you back through sign-in. Without it, the agent's access stops after ten minutes and you sign in again. No tool requires it.
+
+The [permissions reference](/mcp/scopes) lists all seventeen with the consent sentence and the tools each one unlocks.
+
+## What a missing permission does
+
+A tool whose permission was not granted does not return your data. It returns the same fixed error every read failure returns, with no code and no reason.
+
+<Info>
+That silence is deliberate. A message saying "you did not grant contacts:read" would itself be a statement about your account, so the connector refuses to distinguish a missing permission from a missing record or a temporary fault. An agent that tries to tell them apart is guessing.
+</Info>
+
+Ask for the permissions you need at consent time. Probing for them by calling tools tells an agent nothing.
+
+## Read the tool list, not the sentence
+
+A consent sentence is short, and a short sentence is always a little wider than the thing it describes. The last column of the [permissions reference](/mcp/scopes) lists the tools that use each permission, generated from the catalogue the connector registers. If a consent sentence ever sounds wider than that list, believe the list.
+
+## Permissions and the tools that need your approval
+
+Five tools need your approval in a browser as well as a permission. The permission lets an agent propose the change. It does not let the agent make it. [Safe writes and approvals](/mcp/writes) describes the difference, and [approvals](/mcp/approvals) describes the page you decide on.
+
+A withdrawal follows the same rule. `actions.cancel` needs the permissions the proposing tool needed, so a connection that has lost a permission cannot withdraw work it could no longer propose.
+
+## Next steps
+
+<CardGroup cols="2">
+  <Card title="Permissions reference" href="/mcp/scopes">
+    All seventeen, with the consent sentence and the tools each unlocks.
+  </Card>
+  <Card title="Sign-in and credentials" href="/mcp/authentication">
+    Where the consent screen sits in the sign-in flow.
+  </Card>
+</CardGroup>

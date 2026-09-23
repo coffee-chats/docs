@@ -27,7 +27,7 @@ This tool takes no input.
 
 ### Example call
 
-```json
+```json booking.profile.get input
 {}
 ```
 
@@ -37,7 +37,7 @@ A result is never larger than 16,384 bytes.
 
 A result carries these top-level fields:
 
-```json
+```json Top-level fields
 [
   "displayName",
   "headline",
@@ -70,7 +70,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json booking.settings.get input
 {}
 ```
 
@@ -79,11 +79,13 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 A result is never larger than 16,384 bytes.
 If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
 
-This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1 carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1">
+
+```json Top-level fields
 [
   "allowCancel",
   "allowReschedule",
@@ -112,14 +114,20 @@ Shape 1 carries these top-level fields:
 ]
 ```
 
-Shape 2 carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2">
+
+```json Top-level fields
 [
   "fragment",
   "nextCursor"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### Errors
 
@@ -142,7 +150,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json booking.event_types.list input
 {
   "limit": 10
 }
@@ -154,7 +162,7 @@ A result is never larger than 16,384 bytes.
 
 A result carries these top-level fields:
 
-```json
+```json Top-level fields
 [
   "eventTypes",
   "nextCursor"
@@ -181,7 +189,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json booking.event_types.get input
 {
   "id": "0123456789abcdef01234567"
 }
@@ -193,7 +201,7 @@ A result is never larger than 16,384 bytes.
 
 A result carries these top-level fields:
 
-```json
+```json Top-level fields
 [
   "eventType"
 ]
@@ -220,7 +228,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json booking.event_types.questions.list input
 {
   "id": "0123456789abcdef01234567"
 }
@@ -232,7 +240,7 @@ A result is never larger than 16,384 bytes.
 
 A result carries these top-level fields:
 
-```json
+```json Top-level fields
 [
   "nextCursor",
   "questions"
@@ -261,7 +269,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json booking.records.list input
 {
   "limit": 10,
   "status": "CONFIRMED"
@@ -273,26 +281,34 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 A result is never larger than 16,384 bytes.
 If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
 
-This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1 carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1">
+
+```json Top-level fields
 [
   "bookings",
   "nextCursor"
 ]
 ```
 
-Shape 2 carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2">
+
+```json Top-level fields
 [
   "bookings",
   "fragment",
   "nextCursor"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### Errors
 
@@ -315,7 +331,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json booking.records.get input
 {
   "id": "0123456789abcdef01234567"
 }
@@ -326,25 +342,33 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 A result is never larger than 16,384 bytes.
 If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
 
-This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1 carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1">
+
+```json Top-level fields
 [
   "booking"
 ]
 ```
 
-Shape 2 carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2">
+
+```json Top-level fields
 [
   "booking",
   "fragment",
   "nextCursor"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### Errors
 
@@ -367,7 +391,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json booking.records.answers.list input
 {
   "id": "0123456789abcdef01234567"
 }
@@ -379,7 +403,7 @@ A result is never larger than 16,384 bytes.
 
 A result carries these top-level fields:
 
-```json
+```json Top-level fields
 [
   "answers",
   "nextCursor"
@@ -406,7 +430,7 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 
 ### Example call
 
-```json
+```json booking.conflicts.list input
 {}
 ```
 
@@ -415,26 +439,34 @@ Risk: `read`. This tool only reads your own data. It never changes anything and 
 A result is never larger than 16,384 bytes.
 If the stored value does not fit, the tool returns a measured fragment and a cursor for the next one.
 
-This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at.
+This tool's result takes one of these 2 forms, and one call returns exactly one of them. The field named beside each form below says which one you are looking at. Open a form to read its top-level fields.
 
-Shape 1 carries these top-level fields:
+<AccordionGroup>
 
-```json
+<Accordion title="Shape 1">
+
+```json Top-level fields
 [
   "conflicts",
   "nextCursor"
 ]
 ```
 
-Shape 2 carries these top-level fields:
+</Accordion>
 
-```json
+<Accordion title="Shape 2">
+
+```json Top-level fields
 [
   "conflicts",
   "fragment",
   "nextCursor"
 ]
 ```
+
+</Accordion>
+
+</AccordionGroup>
 
 ### Errors
 

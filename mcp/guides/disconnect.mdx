@@ -1,0 +1,68 @@
+---
+title: Disconnect an agent
+description: End one agent connection from either surface, check that it is gone, and find out what happened to a change that was in flight.
+---
+
+This guide shows you how to end one agent connection and what to check afterwards. It takes under a minute. [Ending a connection](/mcp/revocation) explains what a disconnect stops and why.
+
+## Disconnect it
+
+<Tabs>
+  <Tab title="The connections page">
+
+<Steps>
+  <Step title="Open the page">
+    Go to `https://mcp.coffeechats.me/connections` and sign in if you are not already signed in.
+  </Step>
+  <Step title="Find the connection">
+    Each entry shows the application, the origin it was registered with, and the permissions it holds. Read the origin rather than the name: the name is text the application supplied and nobody has checked it.
+  </Step>
+  <Step title="Press Revoke">
+    The button on each entry is labelled "Revoke". The connection is disconnected the moment it succeeds.
+  </Step>
+</Steps>
+
+  </Tab>
+  <Tab title="The Coffee Chats app">
+
+<Steps>
+  <Step title="Open Settings">
+    In the Coffee Chats app, open Settings and go to the Integrations tab.
+  </Step>
+  <Step title="Find the section">
+    The section is headed "Connected apps" and lists the same connections as the connections page.
+  </Step>
+  <Step title="Press Disconnect">
+    The button there is labelled "Disconnect". It does exactly what Revoke does on the connections page.
+  </Step>
+</Steps>
+
+  </Tab>
+</Tabs>
+
+## Check that it is gone
+
+The agent's next call is refused, and so is any attempt to renew its credential. A disconnected connection cannot be resumed: starting again means going through authorization and consent from the beginning.
+
+Disconnecting twice is not an error. The second disconnect returns the connection exactly as it is and changes nothing, so pressing the button again is safe if you are unsure whether the first press worked.
+
+## Find out what happened to a change in flight
+
+A disconnect stops any change Coffee Chats has not already cleared to run. A change that has already started is not stopped, and the connections list will not tell you whether it landed.
+
+Open the thing that was being changed, such as your booking page or the setting itself, and read what it says now. That is the true current state.
+
+## If you wanted to sign out instead
+
+Signing out of the Coffee Chats app ends your own browser session. It disconnects no agent. If you want an agent to stop, disconnect it here.
+
+## Next steps
+
+<CardGroup cols="2">
+  <Card title="Ending a connection" href="/mcp/revocation">
+    What a disconnect stops at once, and what can still finish.
+  </Card>
+  <Card title="Connect an agent" href="/mcp/quickstart">
+    Start a new connection when you want one again.
+  </Card>
+</CardGroup>

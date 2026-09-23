@@ -1,0 +1,231 @@
+---
+title: Update a preference safely
+description: Make one safe write, replay it after a lost answer, recognise the conflict a reused key causes, and handle the retry hint.
+---
+
+This guide shows you how to make a change that needs no approval, and how to repeat it safely when an answer is lost. It works one tool through in full and then gives the other nine, because all ten behave the same way. [Safe writes and approvals](/mcp/writes) explains why these ten are separated from the five that wait for you.
+
+## Send the write
+
+`contacts.notes.update` replaces the private note on one of the student's own contacts. Send the new value and an idempotency key of 16 to 128 characters that you choose:
+
+```json contacts.notes.update input
+{
+  "contactId": "0123456789abcdef01234567",
+  "idempotencyKey": "example-idempotency-key-0006",
+  "notes": "Met at the spring fintech mixer. Follow up in April about the referral."
+}
+```
+
+The answer says the change is done:
+
+```json contacts.notes.update result
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Contact notes updated", "itemCount": 1 }
+}
+```
+
+The `result` object is a summary and a count. The written value is never sent back, so read the value with the matching read tool if you need to show the student what is stored.
+
+## Replay after a lost answer
+
+Send the identical call again, the same tool, the same key and the same input, and the answer is the same completed result. Nothing is written a second time:
+
+```json contacts.notes.update result
+{
+  "tag": "completed",
+  "scenario": "success",
+  "operationId": "0123456789abcdef01234567",
+  "operationStatus": "succeeded",
+  "result": { "summary": "Contact notes updated", "itemCount": 1 }
+}
+```
+
+This is the behaviour to rely on when an answer is lost in transit. Retry the same call rather than building a new one.
+
+## Recognise a reused key
+
+Send the same key with different input, here a different note on the same contact, and the call is refused. Nothing is written and the stored note is untouched:
+
+```json contacts.notes.update result
+{
+  "status": "failed",
+  "scenario": "conflict",
+  "operationId": "0123456789abcdef01234567",
+  "error": {
+    "code": "VERSION_CONFLICT",
+    "retryable": false,
+    "correlationId": "0123456789abcdef01234567"
+  }
+}
+```
+
+A key names one change. Give a genuinely new change a new key.
+
+## Handle the retry hint
+
+A safe write can be accepted and still ask you to come back. The answer is an accepted result with a hint beside it, and nothing has failed:
+
+```json Accepted result with a retry hint
+{
+  "structuredContent": {
+    "tag": "accepted",
+    "scenario": "loading",
+    "operationId": "0123456789abcdef01234567",
+    "operationStatus": "processing"
+  },
+  "_meta": {
+    "coffeechats/retry": {
+      "code": "PERMIT_BACKPRESSURE",
+      "retryAfterMs": 1000,
+      "retryable": true
+    }
+  }
+}
+```
+
+Wait for `retryAfterMs` milliseconds and call the tool again with the same idempotency key.
+
+## The other nine safe writes
+
+Each one takes the same idempotency key and answers with the same shapes. The tool's own reference page carries its full input table.
+
+<AccordionGroup>
+
+<Accordion title="profile.update">
+Sets the student's email-length preference.
+
+```json profile.update input
+{
+  "emailLength": "short",
+  "idempotencyKey": "example-idempotency-key-0001"
+}
+```
+
+The completed summary reads `Email length preference updated`.
+</Accordion>
+
+<Accordion title="profile.job_search_stage.update">
+Sets the job-search stage, the experience level and the recruiting timeline together.
+
+```json profile.job_search_stage.update input
+{
+  "experienceLevel": "college_junior",
+  "idempotencyKey": "example-idempotency-key-0004",
+  "recruitingTimeline": "this_term",
+  "seekingStage": "internship"
+}
+```
+
+The completed summary reads `Job-search stage updated`.
+</Accordion>
+
+<Accordion title="contacts.tags.update">
+Replaces the whole tag list on one contact, at most 10 tags of 60 characters each. The list is replaced rather than merged, so send every tag you want to keep.
+
+```json contacts.tags.update input
+{
+  "contactId": "0123456789abcdef01234567",
+  "idempotencyKey": "example-idempotency-key-0007",
+  "tags": ["fintech", "warm"]
+}
+```
+
+The completed summary reads `Contact tags updated`.
+</Accordion>
+
+<Accordion title="meetings.notes.update">
+Replaces the private preparation notes on one meeting, at most 10,000 characters. This is the meeting's own notes field and not the note the outcome form captures. A practice session is not writable.
+
+```json meetings.notes.update input
+{
+  "idempotencyKey": "example-idempotency-key-0008",
+  "meetingId": "0123456789abcdef01234567",
+  "notes": "Ask about the summer internship pipeline and how referrals are submitted."
+}
+```
+
+The completed summary reads `Meeting notes updated`.
+</Accordion>
+
+<Accordion title="meetings.outcome.update">
+Records the star rating from 1 to 5, the referral outcome, up to 10 key takeaways and the outcome notes, all together. It does not mark a thank-you as sent, it does not schedule a follow-up and it does not move the linked contact. The student does those in the application.
+
+```json meetings.outcome.update input
+{
+  "idempotencyKey": "example-idempotency-key-0009",
+  "keyTakeaways": ["They offered to refer me in April."],
+  "meetingId": "0123456789abcdef01234567",
+  "outcomeNotes": "A warm conversation that ended with a clear next step.",
+  "rating": 5,
+  "referralOutcome": "GOT_REFERRAL"
+}
+```
+
+The completed summary reads `Meeting outcome updated`.
+</Accordion>
+
+<Accordion title="campaign_pause_sending">
+Stops a campaign from sending more mail. Read the bounds on the [campaign pause tool](/mcp/tools/campaign-pause-sending) page before you promise a student anything: it is a hold rather than a withdrawal, mail a send-now batch has already queued is still dispatched, and nothing already sent can be recalled. There is no tool that resumes sending, so the student does that in the application.
+
+```json campaign_pause_sending input
+{
+  "campaignId": "0123456789abcdef01234567",
+  "idempotencyKey": "example-idempotency-key-0010"
+}
+```
+
+The completed summary reads `Campaign sending paused`.
+</Accordion>
+
+<Accordion title="campaigns.details.update">
+Rewrites one campaign's name, description and goal. All three are written together and all three are required, so read them with `campaigns.get` first and send back the values you are keeping. The name is at most 100 characters and may not be blank, the description and the goal at most 500 each. Nothing about who the campaign contacts, what it sends or when it sends changes.
+
+```json campaigns.details.update input
+{
+  "campaignId": "0123456789abcdef01234567",
+  "description": "Outreach to fintech alumni who graduated in the last five years.",
+  "goal": "Book five coffee chats before the end of the term.",
+  "idempotencyKey": "example-idempotency-key-0011",
+  "name": "Spring fintech outreach"
+}
+```
+
+The completed summary reads `Campaign details updated`.
+</Accordion>
+
+<Accordion title="jobs.applications.stage.update">
+Moves one internship application to a stage and a priority. Both are written together and both are required, so read them with `jobs.applications.get` first. The [job tools](/mcp/tools/jobs) page lists the eight stages and the three priorities, and neither field can be cleared. Moving off the saved stage for the first time records the applied date, exactly as the application does.
+
+```json jobs.applications.stage.update input
+{
+  "applicationId": "0123456789abcdef01234567",
+  "idempotencyKey": "example-idempotency-key-0012",
+  "priority": "HIGH",
+  "stage": "APPLIED"
+}
+```
+
+The completed summary reads `Application stage updated`.
+</Accordion>
+
+<Accordion title="actions.cancel">
+Withdraws a request the same connection proposed. It is the one write tool that takes no idempotency key, because the identifier it takes already names one request. [Withdraw a request](/mcp/guides/withdraw-a-request) is the procedure.
+</Accordion>
+
+</AccordionGroup>
+
+## Next steps
+
+<CardGroup cols="2">
+  <Card title="Propose a booking page change" href="/mcp/guides/propose-a-booking-page-change">
+    The five changes that need the student's approval.
+  </Card>
+  <Card title="Settle an uncertain result" href="/mcp/guides/settle-an-uncertain-result">
+    What to do when Coffee Chats will not say whether a write landed.
+  </Card>
+</CardGroup>
