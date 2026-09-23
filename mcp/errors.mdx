@@ -9,14 +9,23 @@ This page lists every error code the connector publishes. Each row says where th
 
 Every code on this page arrives inside a normal, successful protocol response. The HTTP status is 200 in all of them, and so is the status on a read tool's fixed failure text. An agent that branches on HTTP status alone will never see any of these.
 
-Only four HTTP statuses mean anything to a caller, and none of them carries a code from this page.
+These are the HTTP statuses the protocol address answers with. Only the first carries a code from this page; the rest mean the call never reached a tool.
 
-| Status | What it means | What to do |
+| Status | Cause | What to do |
 | --- | --- | --- |
 | 200 | The protocol answered. Every tool result and every tool-level failure, including all the codes below, arrives this way. | Read the result. |
+| 204 | The answer to a browser's preflight request, which carries no body. | Nothing. Your agent host handles this. |
+| 400 | The body of the call was not valid JSON. | Fix the request the agent host is sending. Do not repeat it unchanged. |
 | 401 | The call carried no access credential, or one the connector would not accept. | Renew the credential, or start authorization again. |
+| 403 | The call carried a browser `Origin` header the connector does not allow. | Call from a server or from an allowed origin. Repeating the call will not help. |
+| 405 | The call used an HTTP method other than `GET`, `POST`, `DELETE` or `OPTIONS`. | Fix the method. |
 | 413 | The body of the call was larger than 64 kilobytes. | Send less. No tool input the catalogue defines comes close to that bound. |
+| 415 | A `POST` did not declare a JSON content type. | Send `Content-Type: application/json`. |
 | 429 | A rate limit refused the call. | Wait, then call again. The headers below say how long. |
+| 500 | Something failed inside the connector while answering. | Treat the call's outcome as unknown, read the value back, and report the problem if it repeats. |
+| 503 | The rate limiter's own store was unavailable, so the connector refused rather than let the limit go unenforced. | Wait and call again. Nothing was written. |
+
+Any status outside this table is not one the connector produces on purpose. Treat it as undefined, report it, and do not retry blindly.
 
 A 429 answer carries these headers: `RateLimit-Policy`, `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` and `Retry-After`. Wait the number of seconds in `Retry-After` before calling again. The [limits](/mcp/limits) page states what each limiter counts.
 

@@ -91,7 +91,7 @@ Every Coffee Chats identifier is a 24-character hexadecimal string. The examples
 
 ### Shapes the contract allows and no tool sends
 
-The result format is shared by tools that do not exist yet, so it declares more than any tool returns today. The `requires_user_action` tag and the `pending`, `processing` and `succeeded` values of `status` are declared and unused. Do not build against a result shape you have not seen documented for a specific tool. Each tool's page in the [tool reference](/mcp/tools/overview) lists the shapes that tool can return. Report anything else as an unrecognised answer instead of acting on it.
+The result format is shared by tools that do not exist yet, so it declares more than any tool returns today. The `requires_user_action` tag and the `pending`, `processing` and `succeeded` values of `status` are declared and unused. The `requires_confirmation` shape also declares an optional `actionId` field, and no tool sends it either, so `operationId` is the only identifier a review request ever arrives under. Do not build against a result shape you have not seen documented for a specific tool. Each tool's page in the [tool reference](/mcp/tools/overview) lists the shapes that tool can return. Report anything else as an unrecognised answer instead of acting on it.
 
 ## What each outcome means
 

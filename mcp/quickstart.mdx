@@ -186,7 +186,7 @@ Dynamic client registration is off. Send one of the two pre-registered client id
 | Refresh credential | Single use. Using it returns a new one and retires the old one. |
 | Agent calls on one connection | 120 per minute |
 | Largest call body | 64 kilobytes, then HTTP status 413 |
-| Largest result | 16,384 bytes on a read, 4,096 on a write |
+| Largest result | 4,096 bytes on the fifteen writes and on `profile.job_search_stage.get`, 16,384 on the other forty-three reads |
 | Idempotency key | 16 to 128 characters, on 14 of the 15 write tools |
 | A review request's life | 30 minutes, and an edit does not extend it |
 | Changes cleared to run at once, per connection | 4, each with 30 seconds to start |
@@ -252,7 +252,7 @@ Five tools are marked `consequential` and write nothing on their first call. The
 
 <Step title="Handle the failures">
 
-All tool-level failures arrive inside a normal protocol response with HTTP status 200. Only 401, 413 and 429 mean anything at the transport level. A 429 carries `RateLimit-Policy`, `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` and `Retry-After`.
+All tool-level failures arrive inside a normal protocol response with HTTP status 200. A call that never reached a tool answers with 400, 401, 403, 405, 413, 415, 429, 500 or 503 instead, and [error codes](/mcp/errors) gives the cause and the action for each. A 429 carries `RateLimit-Policy`, `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset` and `Retry-After`.
 
 [Error codes](/mcp/errors) is the catalogue, and [handle errors and retries](/mcp/guides/handle-errors) is the procedure.
 
